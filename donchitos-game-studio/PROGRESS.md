@@ -218,3 +218,238 @@ Per the assigning issue, these are reserved for later phases:
 Any of the above that turns out to already be partially covered by this
 phase's work (e.g. some general QA/release skills already touch on store
 readiness) should be treated as a head start, not as already complete.
+
+---
+
+# Progress — Phase 2 (Work Items 4-5)
+
+Phase 2 covers Work Items 4 (rewrite the CEO) and 5 (add the Publishing &
+Growth pillar) only. Work Items 6-11 remain out of scope — see "What remains"
+at the bottom, updated for the current state.
+
+## Work Item 4 — Rewrite the CEO (COMPLETE)
+
+- `agents/ceo/AGENTS.md` rewritten: explicit direct-report list
+  (`creative-director`, `technical-director`, `producer`,
+  `publishing-director`, plus `finance-controller` and
+  `legal-compliance-officer` added during Work Item 5 — see below), the four
+  required pre-greenlight inputs (`market-scan` output, `kpi-review` output,
+  `ops/metrics/` dashboard, finance runway report), explicit numeric
+  greenlight/kill criteria read from a new `ops/targets.yaml` (CPI ceiling,
+  D1/D7/D30 retention floors, ARPDAU floor, payback-days ceiling, budget-burn
+  ceiling), and four fixed output templates (Portfolio Decision, Cross-Pillar
+  Ruling, Resource Reallocation, Quarterly Strategy Note) written out
+  literally in the body.
+- `ops/targets.yaml` created, seeded with `TODO` for every threshold — no
+  fabricated numbers. The CEO's AGENTS.md documents that setting real values
+  is its first-operating-cycle action, logged to `ops/decision-log.md`.
+  `ceo/AGENTS.md`'s Must-NOT list now explicitly includes inventing
+  thresholds outside this file, editing metric definitions, and editing
+  `ops/always-ask.yaml`.
+- `ceo/AGENTS.md`'s `skills:` frontmatter now includes `market-scan`,
+  `kpi-review`, and `portfolio-review` — none of these exist under `skills/`
+  yet; Phase 3 must create them (see "What remains").
+
+## Work Item 5 — Publishing & Growth pillar (COMPLETE)
+
+- 8 new agents created under `agents/<slug>/AGENTS.md`, each with full
+  upstream-derived or structurally-derived bodies (≥150 words, real
+  procedural content, no stubs):
+  - `publishing-director` (reports to `ceo`) — merged from
+    `UPSTREAM_AGENCY`'s `product/product-manager.md` and
+    `marketing/marketing-growth-hacker.md` (no literal `cmo`/`vp-product` file
+    exists in this fork at the pinned commit — see `DECISIONS.md` #10 for the
+    substitution rationale).
+  - `ua-manager` (reports to `publishing-director`) — merged from
+    `paid-media/paid-media-paid-social-strategist.md` and
+    `paid-media/paid-media-tracking-specialist.md`.
+  - `aso-specialist` (reports to `publishing-director`) — from
+    `marketing/marketing-app-store-optimizer.md`.
+  - `monetization-designer` (reports to `publishing-director`) — structurally
+    based on `agents/economy-designer/AGENTS.md` per the issue's own
+    instruction, not sourced from `UPSTREAM_AGENCY`.
+  - `market-analyst` (reports to `publishing-director`) — from
+    `product/product-trend-researcher.md`.
+  - `legal-compliance-officer` (reports to `ceo`, **not**
+    `publishing-director` — see max-7-cap fix below) — from
+    `support/support-legal-compliance-checker.md`.
+  - `finance-controller` (reports to `ceo`) — from
+    `support/support-finance-tracker.md`.
+  - `player-support` (reports to `community-manager`) — from
+    `support/support-support-responder.md`.
+  - All 8 were rewritten to remove B2B/SaaS/enterprise/regional-social-platform
+    content and speak entirely to a mobile f2p game studio; all fabricated
+    "success metric" benchmarks from the upstream files (e.g. specific
+    CAC:LTV ratios, retention percentages) were dropped in favor of
+    referencing `ops/targets.yaml` and the studio's own `kpi-review`/
+    `market-scan` output instead of hardcoded numbers.
+- `teams/publishing/TEAM.md` created, manager `publishing-director`, includes
+  the 5 new reports plus the 3 moved agents (`analytics-engineer`,
+  `community-manager`, `live-ops-designer`) and `player-support`.
+  `legal-compliance-officer` is deliberately **not** in this team's includes
+  since it reports to `ceo`, not `publishing-director` — see below.
+- `analytics-engineer`, `community-manager`, and `live-ops-designer` moved to
+  `reportsTo: publishing-director`. `teams/production/TEAM.md` updated to
+  remove them and its description/prose rewritten accordingly.
+  `producer/AGENTS.md`'s delegation list and prose updated to match. Every
+  internal "producer approval"/"reports to producer" reference inside these
+  three agents' own AGENTS.md bodies was also updated so body text matches
+  the new frontmatter, not just the frontmatter field itself.
+- `player-support` added as `community-manager`'s only direct report;
+  `community-manager`'s "Who Reports To You" and "Coordination" sections
+  updated; all internal "producer" references in `community-manager`'s body
+  updated to `publishing-director` to match its new `reportsTo`.
+- `teams/leadership/TEAM.md` updated to include `publishing-director` and its
+  prose rewritten to describe all four CEO-report pillars.
+- **Max-7-direct-reports cap violation found and fixed**: the issue's literal
+  instructions would have given `publishing-director` 8 direct reports.
+  `legal-compliance-officer` was moved to report to `ceo` instead — see
+  `DECISIONS.md` #11 for the full rationale (loosest coupling to the
+  publishing pillar specifically, plus the independence argument for a
+  compliance function). Full detail and rationale in `DECISIONS.md`.
+- `README.md` and `COMPANY.md` updated: agent count 40 → 48, full agent
+  table regenerated, org-tier description updated to four pillars plus two
+  CEO-direct individual functions (Finance Controller, Legal & Compliance
+  Officer), and a note added that 8 new skill names are referenced but not
+  yet created (Phase 3's job).
+- `ops/always-ask.yaml`'s `applies_to` lists updated to include the new
+  relevant agents (`ua-manager`, `finance-controller`, `monetization-designer`,
+  `publishing-director`, `legal-compliance-officer`) on the always-ask
+  categories their new roles actually touch (real-money spend,
+  first-release/price-change, legal terms, personal-data-outside-policy).
+  The five always-ask categories themselves were not changed — only which
+  agents they apply to.
+
+## Full agent list (48) and reportsTo tree, current state
+
+```
+ceo (reportsTo: null)
+├── creative-director
+│   ├── art-director
+│   │   ├── technical-artist
+│   │   └── ux-designer
+│   ├── audio-director
+│   │   └── sound-designer
+│   ├── game-designer
+│   │   ├── systems-designer
+│   │   ├── level-designer
+│   │   └── economy-designer
+│   └── narrative-director
+│       ├── writer
+│       └── world-builder
+├── technical-director
+│   ├── lead-programmer
+│   │   ├── ai-programmer
+│   │   ├── engine-programmer
+│   │   ├── gameplay-programmer
+│   │   ├── network-programmer
+│   │   ├── tools-programmer
+│   │   ├── ui-programmer
+│   │   └── unity-specialist
+│   │       ├── unity-addressables-specialist
+│   │       ├── unity-dots-specialist
+│   │       ├── unity-shader-specialist
+│   │       └── unity-ui-specialist
+│   ├── qa-lead
+│   │   └── qa-tester
+│   ├── performance-analyst
+│   ├── devops-engineer
+│   └── security-engineer
+├── producer
+│   ├── release-manager
+│   ├── localization-lead
+│   ├── prototyper
+│   └── accessibility-specialist
+├── publishing-director
+│   ├── ua-manager
+│   ├── aso-specialist
+│   ├── monetization-designer
+│   ├── market-analyst
+│   ├── analytics-engineer
+│   ├── community-manager
+│   │   └── player-support
+│   └── live-ops-designer
+├── finance-controller
+└── legal-compliance-officer
+```
+
+## 7-report-cap check (run programmatically after all Work Item 5 edits)
+
+```
+Total agents: 48
+lead-programmer: 7
+publishing-director: 7
+ceo: 6
+technical-director: 5
+producer: 4
+creative-director: 4
+unity-specialist: 4
+game-designer: 3
+art-director: 2
+narrative-director: 2
+community-manager: 1
+qa-lead: 1
+audio-director: 1
+
+Max reports for any manager: 7   <-- PASS (cap is 7, none exceed it)
+```
+
+Also verified programmatically after all Work Item 4-5 edits: every
+`reportsTo` resolves to an existing agent (only `ceo` has `null`); every
+agent has `name`/`title`/`reportsTo`/`skills`; every `AGENTS.md` body is
+≥150 words; every `skills:` entry either exists under `skills/` or is one of
+the 8 explicitly-flagged not-yet-created Phase 3 skills (see below) — no
+other unexpected missing skill references.
+
+## What remains — Work Items 6-11 (Phase 3 and Phase 4)
+
+### Phase 3 (Work Items 6, 7, 8)
+
+- **New skills to create** (referenced in frontmatter across this phase's
+  work, none exist under `skills/` yet):
+  - `market-scan` — used by `ceo`, `publishing-director`, `market-analyst`.
+  - `kpi-review` — used by `ceo`, `publishing-director`.
+  - `portfolio-review` — used by `ceo`.
+  - `concept-validation` — used by `market-analyst`.
+  - `monetization-setup` — used by `monetization-designer`.
+  - `privacy-compliance` — used by `legal-compliance-officer`.
+  - `aso-update` — used by `aso-specialist`.
+  - `ua-campaign` — used by `ua-manager`.
+  - Each must ship with real `## Procedure`/`## Output` sections (≥150
+    words), `usage` metadata consistent with this package's existing skill
+    shape, and — per the hard constraint against fabricating store/platform
+    policy facts — any store-policy-adjacent skill (`aso-update`,
+    `privacy-compliance`) must instruct fetching the current official source
+    at runtime rather than hardcoding App Store/Google Play/COPPA/GDPR/ATT/
+    Play Data Safety specifics.
+- **Work Item 6+**: rewrite `skill-improve` to measure outcomes, not just
+  `skill-test static` structural checks (ground truth #4) — still open,
+  untouched by Phase 2.
+- **Work Item 7+**: full rewrite of `docs/model-tiers.md` for
+  `claude-opus-5-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` — still
+  open, untouched by Phase 2.
+- **Work Item 8+**: `UPSTREAM_AGENCY` has now been substantially consumed by
+  Work Item 5 (8 new agents sourced from it), but any remaining
+  agency-agents content the later phases want (e.g. additional paid-media
+  specialists, more marketing-channel agents) is still available at the
+  pinned commit `68f01534ef30805ed3764f2d302ad03fe443707a`.
+
+### Phase 4 (Work Items 9, 10, 11 + final PR)
+
+- **Work Item 9+**: BUSINESS_MODEL-specific monetization skill/agent content
+  (IAP + rewarded ads workflows) — partially addressed by this phase's
+  `monetization-designer` agent and `ops/always-ask.yaml` price-change gate,
+  but the `monetization-setup` skill itself (the executable workflow) is
+  still a Phase 3 deliverable, not yet written.
+- **Work Item 10+**: COPPA/GDPR/ATT/Play Data Safety runtime-fetch skills —
+  the `legal-compliance-officer` agent now exists and its AGENTS.md
+  establishes the "fetch current official source, never hardcode" rule, but
+  the actual `privacy-compliance` skill implementing that workflow is a
+  Phase 3 deliverable, not yet written.
+- **Work Item 11+**: a reusable, committed validation/CI script — still not
+  written. All verification in Phase 1 and Phase 2 (word counts, reportsTo
+  resolution, 7-report cap, skill-existence) was done with ad hoc inline
+  Python, not committed to the repo as a script. This remains open for
+  whichever later phase the issue designates for it.
+- Final PR against `agentcompanies/v1` upstream is not yet opened — reserved
+  for the end of Phase 4 per the issue's structure.

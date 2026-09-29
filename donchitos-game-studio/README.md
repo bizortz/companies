@@ -1,6 +1,6 @@
 # Donchitos Game Studio
 
-> Autonomous Unity mobile game studio (iOS/Android) — AI agents spanning creative direction, engineering, design, art, audio, narrative, QA, production, and live operations, operating without human approval gates except a fixed always-ask list
+> Autonomous Unity mobile game studio (iOS/Android) — AI agents spanning creative direction, engineering, design, art, audio, narrative, QA, production, publishing & growth (UA, ASO, monetization, analytics, live ops, community, legal/compliance, finance), operating without human approval gates except a fixed always-ask list
 
 > An [Agent Company](https://agentcompanies.io) based on [Claude Code Game Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) (pinned at commit `7ed2c3e9c46c880c9780fbce49266e7edfa15141`) — game studio workflows and skills for design documents, sprint planning, team coordination, balancing, QA, release management, and live operations, fully inlined and adapted for autonomous operation
 
@@ -12,7 +12,7 @@
 
 | Content | Count |
 |---------|-------|
-| Agents | 40 |
+| Agents | 48 |
 | Skills | 53 |
 
 This studio runs `autonomous` by default (see `docs/automation-modes.md`):
@@ -21,6 +21,20 @@ categories in `ops/always-ask.yaml` (real-money spend above a weekly limit,
 first public release or price changes, legal terms, personal data handling
 outside policy, and deleting production data). Every decision above
 specialist level is recorded in `ops/decision-log.md`.
+
+The studio has four pillars reporting to the CEO: Creative (Creative
+Director), Engineering (Technical Director), Production (Producer), and
+Publishing & Growth (Publishing Director) — plus two individual CEO reports,
+Finance Controller and Legal & Compliance Officer, kept independent of any
+single pillar. See `PROGRESS.md` for the record of the Publishing & Growth
+pillar's addition and `ops/targets.yaml` for the greenlight/kill thresholds
+the CEO uses at every portfolio decision.
+
+Note: eight new skills referenced in this reorganization's agent frontmatter
+(`market-scan`, `kpi-review`, `portfolio-review`, `concept-validation`,
+`monetization-setup`, `privacy-compliance`, `aso-update`, `ua-campaign`) do
+not exist under `skills/` yet — they are reserved for Phase 3. The skill
+count above (53) reflects only skills that currently exist on disk.
 
 The studio is Unity-only (iOS and Android) — Unreal Engine and Godot
 specialist teams from the upstream template were removed; see
@@ -32,26 +46,33 @@ specialist teams from the upstream template were removed; see
 |-------|------------|
 | Accessibility Specialist | producer |
 | AI Programmer | lead-programmer |
-| Analytics Engineer | producer |
+| Analytics Engineer | publishing-director |
+| App Store Optimization Specialist | publishing-director |
 | Art Director | creative-director |
 | Audio Director | creative-director |
 | Studio Head & CEO | — |
-| Community Manager | producer |
+| Community Manager | publishing-director |
 | Creative Director | ceo |
 | DevOps Engineer | technical-director |
 | Economy Designer | game-designer |
 | Engine Programmer | lead-programmer |
+| Finance Controller | ceo |
 | Lead Game Designer | creative-director |
 | Gameplay Programmer | lead-programmer |
 | Lead Programmer | technical-director |
+| Legal & Compliance Officer | ceo |
 | Level Designer | game-designer |
-| Live Operations Designer | producer |
+| Live Operations Designer | publishing-director |
 | Localization Lead | producer |
+| Market Analyst | publishing-director |
+| Monetization Designer | publishing-director |
 | Narrative Director | creative-director |
 | Network Programmer | lead-programmer |
 | Performance Analyst | technical-director |
+| Player Support Specialist | community-manager |
 | Producer | ceo |
 | Prototyper | producer |
+| Publishing Director | ceo |
 | QA Lead | technical-director |
 | QA Tester | qa-lead |
 | Release Manager | producer |
@@ -67,6 +88,7 @@ specialist teams from the upstream template were removed; see
 | Unity Shader/VFX Specialist | unity-specialist |
 | Unity Engine Lead | lead-programmer |
 | Unity UI Specialist | unity-specialist |
+| User Acquisition Manager | publishing-director |
 | UX Designer | art-director |
 | World Builder | narrative-director |
 | Writer | narrative-director |

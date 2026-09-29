@@ -12,8 +12,11 @@
 version: 1
 
 # Weekly real-money spend ceiling before a spend requires human sign-off.
-# Defaults to 0 (i.e. no autonomous real-money spend is pre-approved) until a
-# Finance/BizOps function (added in a later phase) sets this explicitly.
+# Defaults to 0 (i.e. no autonomous real-money spend is pre-approved). The
+# Finance Controller function now exists (agents/finance-controller/AGENTS.md)
+# but has not yet set a real value here — doing so is a proposal it brings to
+# the CEO, logged to ops/decision-log.md, not a unilateral edit; until that
+# happens the fail-safe default of 0 stands.
 spend_limit_usd: 0
 
 always_ask:
@@ -22,20 +25,20 @@ always_ask:
       Spending real money above spend_limit_usd in a rolling 7-day window
       (ad spend, UA spend, paid tools/services, contractor payouts, store
       fees paid directly rather than deducted by the platform, etc.).
-    applies_to: [analytics-engineer, live-ops-designer, producer, ceo]
+    applies_to: [analytics-engineer, live-ops-designer, producer, ua-manager, finance-controller, ceo]
 
   - id: first_release_or_price_change
     description: >
       The first public release of a game (App Store / Google Play listing
       going live for the first time), or any change to a price, subscription
       tier, or IAP/ad-monetization pricing structure for a released game.
-    applies_to: [release-manager, producer, economy-designer, ceo]
+    applies_to: [release-manager, producer, economy-designer, monetization-designer, publishing-director, ceo]
 
   - id: legal_terms_or_contracts
     description: >
       Accepting Terms of Service, EULAs, contracts, or any legally binding
       agreement with a third party (platform, vendor, contractor, publisher).
-    applies_to: [ceo, producer]
+    applies_to: [ceo, producer, legal-compliance-officer]
 
   - id: personal_data_outside_policy
     description: >
@@ -43,7 +46,7 @@ always_ask:
       way not already covered by the studio's written privacy/data policy —
       including new analytics events, new third-party SDKs that touch user
       data, or any change to data retention/sharing.
-    applies_to: [analytics-engineer, security-engineer, live-ops-designer, ceo]
+    applies_to: [analytics-engineer, security-engineer, live-ops-designer, ua-manager, legal-compliance-officer, ceo]
 
   - id: delete_production_data
     description: >

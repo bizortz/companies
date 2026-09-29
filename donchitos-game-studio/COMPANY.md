@@ -32,10 +32,10 @@ The studio operates through a **hybrid pipeline + hub-and-spoke workflow**:
 
 ### Organizational Tiers
 
-- **CEO** (Opus-tier): Studio Head aligns creative, technical, and production pillars and makes greenlight decisions
-- **Directors** (Opus-tier): Creative Director, Technical Director, and Producer set vision, architecture, and schedule — all report to the CEO
-- **Department Leads** (Sonnet-tier): Game Designer, Lead Programmer, Art Director, Audio Director, Narrative Director, QA Lead, and others translate direction into actionable work
-- **Specialists** (Sonnet/Haiku-tier): 30+ specialists execute domain-specific tasks — from Gameplay Programmers to Sound Designers to Engine Specialists
+- **CEO** (Opus-tier): Studio Head aligns creative, technical, production, and publishing/growth pillars and makes portfolio greenlight/kill decisions against explicit thresholds in `ops/targets.yaml`. Finance Controller and Legal & Compliance Officer also report directly to the CEO, kept independent of any single pillar.
+- **Directors** (Opus-tier): Creative Director, Technical Director, Producer, and Publishing Director set vision, architecture, schedule, and go-to-market/monetization strategy — all report to the CEO.
+- **Department Leads** (Sonnet-tier): Game Designer, Lead Programmer, Art Director, Audio Director, Narrative Director, QA Lead, Community Manager, and others translate direction into actionable work.
+- **Specialists** (Sonnet/Haiku-tier): 35+ specialists execute domain-specific tasks — from Gameplay Programmers to Sound Designers to Engine Specialists to User Acquisition Manager and ASO Specialist.
 
 ### Autonomous Operating Protocol
 
