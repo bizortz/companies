@@ -401,55 +401,169 @@ agent has `name`/`title`/`reportsTo`/`skills`; every `AGENTS.md` body is
 the 8 explicitly-flagged not-yet-created Phase 3 skills (see below) — no
 other unexpected missing skill references.
 
-## What remains — Work Items 6-11 (Phase 3 and Phase 4)
 
-### Phase 3 (Work Items 6, 7, 8)
+---
 
-- **New skills to create** (referenced in frontmatter across this phase's
-  work, none exist under `skills/` yet):
-  - `market-scan` — used by `ceo`, `publishing-director`, `market-analyst`.
-  - `kpi-review` — used by `ceo`, `publishing-director`.
-  - `portfolio-review` — used by `ceo`.
-  - `concept-validation` — used by `market-analyst`.
-  - `monetization-setup` — used by `monetization-designer`.
-  - `privacy-compliance` — used by `legal-compliance-officer`.
-  - `aso-update` — used by `aso-specialist`.
-  - `ua-campaign` — used by `ua-manager`.
-  - Each must ship with real `## Procedure`/`## Output` sections (≥150
-    words), `usage` metadata consistent with this package's existing skill
-    shape, and — per the hard constraint against fabricating store/platform
-    policy facts — any store-policy-adjacent skill (`aso-update`,
-    `privacy-compliance`) must instruct fetching the current official source
-    at runtime rather than hardcoding App Store/Google Play/COPPA/GDPR/ATT/
-    Play Data Safety specifics.
-- **Work Item 6+**: rewrite `skill-improve` to measure outcomes, not just
-  `skill-test static` structural checks (ground truth #4) — still open,
-  untouched by Phase 2.
-- **Work Item 7+**: full rewrite of `docs/model-tiers.md` for
-  `claude-opus-5-5` / `claude-sonnet-5` / `claude-haiku-4-5-20251001` — still
-  open, untouched by Phase 2.
-- **Work Item 8+**: `UPSTREAM_AGENCY` has now been substantially consumed by
-  Work Item 5 (8 new agents sourced from it), but any remaining
-  agency-agents content the later phases want (e.g. additional paid-media
-  specialists, more marketing-channel agents) is still available at the
-  pinned commit `68f01534ef30805ed3764f2d302ad03fe443707a`.
+# Progress — Phase 3 (Work Items 6, 7, 8)
 
-### Phase 4 (Work Items 9, 10, 11 + final PR)
+Phase 3 covers Work Items 6 (mobile skills), 7 (outcome-based self-improvement
+loop), and 8 (projects) only. Work Items 9-11 remain out of scope — see "What
+remains" at the bottom.
 
-- **Work Item 9+**: BUSINESS_MODEL-specific monetization skill/agent content
-  (IAP + rewarded ads workflows) — partially addressed by this phase's
-  `monetization-designer` agent and `ops/always-ask.yaml` price-change gate,
-  but the `monetization-setup` skill itself (the executable workflow) is
-  still a Phase 3 deliverable, not yet written.
-- **Work Item 10+**: COPPA/GDPR/ATT/Play Data Safety runtime-fetch skills —
-  the `legal-compliance-officer` agent now exists and its AGENTS.md
-  establishes the "fetch current official source, never hardcode" rule, but
-  the actual `privacy-compliance` skill implementing that workflow is a
-  Phase 3 deliverable, not yet written.
-- **Work Item 11+**: a reusable, committed validation/CI script — still not
-  written. All verification in Phase 1 and Phase 2 (word counts, reportsTo
-  resolution, 7-report cap, skill-existence) was done with ad hoc inline
-  Python, not committed to the repo as a script. This remains open for
-  whichever later phase the issue designates for it.
-- Final PR against `agentcompanies/v1` upstream is not yet opened — reserved
-  for the end of Phase 4 per the issue's structure.
+## Work Item 6 — Mobile skills (COMPLETE)
+
+- 12 new skills created under `skills/<slug>/SKILL.md`, each with Purpose,
+  Trigger/Owner Agent, Inputs, numbered Procedure, an Output template with an
+  exact file path and structure, Pass/Fail Criteria, and a Handoff section,
+  plus the package's standard `## Procedure`/`## Output` sections and
+  ≥150-word bodies (all verified well over 500 words each): `market-scan`,
+  `concept-validation`, `device-perf-budget`, `monetization-setup`,
+  `privacy-compliance`, `store-submission`, `aso-update`, `soft-launch`,
+  `ua-campaign`, `kpi-review`, `portfolio-review`, `incident-response`. This
+  closes all 8 skill names flagged missing at the end of Phase 2 plus the 4
+  more named in Work Item 6's table.
+- Every store/platform-policy-adjacent skill (`privacy-compliance`,
+  `store-submission`, `aso-update`) instructs fetching and citing the
+  current official Apple/Google/COPPA/GDPR source at runtime — no App
+  Store/Google Play/ATT/Play Data Safety/COPPA/GDPR numeric threshold or
+  policy clause is hardcoded anywhere in these files.
+- `gate-check`, `scope-check`, and `milestone-review` already existed in the
+  original package (checked first, per the issue's own instruction) and were
+  left unchanged — they reference only `creative-director`, `technical-
+  director`, and `producer`, all still valid Tier-1-style directors in the
+  current 49-agent org, so no consistency fix was needed.
+- New skills use `metadata.sources: [{kind: original, usage: original,
+  authored_for: donchitos-game-studio, phase: 3}]` instead of the `kind:
+  github-file` shape used by the 53 upstream-sourced skills, since no
+  upstream file exists for them — same `metadata.sources` list shape,
+  honest about provenance (`DECISIONS.md` #17).
+
+## Work Item 7 — Self-improvement loop, outcome-based (COMPLETE)
+
+- `ops/metrics-registry.yaml` created: 12 required metrics (gate pass rate
+  at first attempt, bug escape rate, sprint estimate accuracy, rework rate,
+  decision reversal rate, crash-free sessions, D1/D7/D30 retention, CPI,
+  ROAS, store rejection count), each with `id, definition, source, owner,
+  direction, min_sample`. The file's header states, three times across the
+  package (the file itself, `skills/improvement-cycle/SKILL.md`, and
+  `agents/org-improvement-lead/AGENTS.md`'s Must-NOT list), that it is
+  immutable to every agent except `analytics-engineer` and never editable by
+  the improvement loop — enforced by convention/prompting, as is every other
+  guardrail in this prompt-driven package (`DECISIONS.md` #20).
+- Evidence-capture steps added to `bug-triage`, `gate-check`,
+  `retrospective`, and `playtest-report` (each appends structured findings —
+  `finding, affected agent/skill, evidence, metric affected, severity` — to
+  `ops/learnings/<date>-<source>.md`, skipping the step when there's no
+  systemic signal to log); `kpi-review` (new in Work Item 6) shipped with
+  this step built in from the start.
+- New agent `agents/org-improvement-lead/AGENTS.md` (reports to `ceo`, full
+  ≥150-word body, 791 words) with explicit Must-NOT guardrails: no edits to
+  `ops/metrics-registry.yaml`, `ops/targets.yaml`, `ops/always-ask.yaml`, the
+  CEO's Must-NOT section, or its own AGENTS.md; no agent deletion; no
+  `reportsTo` changes (structural org changes are proposed to the CEO, never
+  self-applied); every change reversible via `ops/improvements/ledger.md`.
+- New skill `skills/improvement-cycle/SKILL.md` (790 words) implementing the
+  full 6-step procedure from the issue: cluster `ops/learnings/` by metric
+  impact x frequency, propose top-3 with exact diffs/hypothesis/target
+  metric/evaluation window/rollback condition, `skill-test static` gate
+  before applying, apply on a branch/versioned copy with baseline capture,
+  evaluate against `min_sample` and keep/revert, log every outcome to
+  `ops/improvements/ledger.md`. Enforces 1 experiment per target file, 3
+  concurrent company-wide.
+- `ops/improvements/ledger.md` created (seeded with schema + concurrency
+  limits, no entries yet). `ops/learnings/README.md` created (format spec,
+  empty directory otherwise — tracked via this README rather than a bare
+  `.gitkeep`, since the format needed documenting somewhere and this avoided
+  adding a second file).
+- `improvement-cycle`'s trigger added to `retrospective`'s new `## Handoff`
+  section (placed after a new Phase 7 evidence-capture step and the existing
+  Phase 6 "Next Steps"), per the issue's own preference for `retrospective`
+  when both `sprint-plan` and `retrospective` exist (`DECISIONS.md` #22).
+- **CEO direct-report count: 6 -> 7 — exactly at the studio's 7-report cap.**
+  `org-improvement-lead` is the CEO's 7th direct report. Verified
+  programmatically: 49 total agents (48 -> 49), `ceo` has 7 reports,
+  `publishing-director` and `lead-programmer` also have 7 (pre-existing from
+  Phases 1-2), no manager exceeds 7.
+
+## Work Item 8 — Projects (COMPLETE)
+
+- `projects/new-game-kickoff` kept, with two tasks inserted into its
+  sequence: `validate-concept` (market-analyst, runs the `concept-validation`
+  skill) as the new first task before `define-game-pillars`/Concept Lock,
+  and `set-perf-budget` (performance-analyst, runs `device-perf-budget`)
+  added to Pre-Production alongside `select-engine`/`decompose-systems`.
+  `PROJECT.md`'s milestone descriptions and the `define-game-pillars` and
+  `build-prototype` task bodies were updated to reflect the new sequence and
+  cross-references (`build-prototype` now explicitly measures against
+  `design/perf-budget.md` on the low-tier device band).
+- New project `projects/mobile-launch` (owner `publishing-director`) with 9
+  chained tasks, each with owner/inputs/done-criteria/`## Next Task`:
+  `privacy-compliance` -> `monetization-setup` -> `aso-update` ->
+  `store-submission-soft-launch` -> `soft-launch` -> `kpi-review` ->
+  `go-no-go-global-launch` -> `ua-campaign-scale-up` -> `live-ops-cadence`.
+- New project `projects/continuous-improvement` (owner `org-improvement-lead`)
+  with a single recurring `improvement-cycle` task whose `## Next Task` is
+  explicitly itself, run again at the next sprint end — no terminal state,
+  matching the issue's "loops back to itself" instruction.
+
+## Verification performed (Phase 3)
+
+```
+Total skills on disk: 66
+Total agents: 49
+Missing skill refs across all agents/*/AGENTS.md: NONE
+Max reports for any manager: 7  <-- PASS (cap is 7)
+  publishing-director: 7
+  lead-programmer: 7
+  ceo: 7
+  technical-director: 5
+  producer: 4
+  unity-specialist: 4
+  creative-director: 4
+  game-designer: 3
+  art-director: 2
+  narrative-director: 2
+  community-manager: 1
+  qa-lead: 1
+  audio-director: 1
+```
+
+Full skill list (66): architecture-decision, asset-audit, aso-update,
+balance-check, brainstorm, bug-report, bug-triage, changelog, code-review,
+concept-validation, consistency-check, day-one-patch, design-review,
+design-system, device-perf-budget, estimate, gate-check, hotfix,
+improvement-cycle, incident-response, kpi-review, launch-checklist,
+localize, map-systems, market-scan, milestone-review, monetization-setup,
+onboard, patch-notes, perf-profile, playtest-report, portfolio-review,
+privacy-compliance, project-stage-detect, propagate-design-change,
+prototype, qa-plan, regression-suite, release-checklist, retrospective,
+reverse-document, scope-check, security-audit, setup-engine, skill-improve,
+skill-test, smoke-check, soak-test, soft-launch, sprint-plan, sprint-status,
+start, store-submission, story-done, story-readiness, team-audio,
+team-combat, team-level, team-live-ops, team-narrative, team-polish,
+team-release, team-ui, tech-debt, ua-campaign, vertical-slice.
+
+`README.md`'s Agents and Skills tables regenerated programmatically from
+on-disk frontmatter to match (49 agents, 66 skills); `COMPANY.md`'s
+organizational-tiers paragraph updated for `org-improvement-lead`.
+
+## What remains — Work Items 9-11 (Phase 4)
+
+- **Work Item 9**: package metadata — not yet addressed.
+- **Work Item 10**: model tiers — `docs/model-tiers.md` still needs the full
+  rewrite for `claude-opus-5-5` / `claude-sonnet-5` /
+  `claude-haiku-4-5-20251001` (flagged since Phase 1, still open — Phase 1's
+  note that it was "left largely as-is... for a later phase" now resolves to
+  Phase 4).
+- **Work Item 11**: a reusable, committed validation/CI script, plus fixing
+  whatever it finds, plus the final PR and `MODIFICATION_REPORT.md`. All
+  verification across Phases 1-3 (word counts, `reportsTo` resolution,
+  7-report cap, skill-existence) has been done with ad hoc inline Python,
+  never committed to the repo as a script — Phase 4 should commit one (e.g.
+  `scripts/validate.py`) covering all the checks demonstrated in this file
+  and `PROGRESS.md`'s Phase 1/2 sections, run it, fix anything it surfaces,
+  then open the final PR against `agentcompanies/v1` upstream with
+  `MODIFICATION_REPORT.md` summarizing the full four-phase change set.
+- `UPSTREAM_AGENCY` (pinned `68f01534ef30805ed3764f2d302ad03fe443707a`) has
+  now been consumed by Work Item 5 only; any further agency-agents content
+  Phase 4 wants remains available at that pinned commit.

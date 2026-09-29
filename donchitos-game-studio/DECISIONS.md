@@ -326,3 +326,42 @@ Deviations, if any come up while executing, will be appended below this line.
     organizational-tiers paragraph, were hand-edited to add
     `org-improvement-lead` and remove the now-resolved "8 skills not yet
     created" note.
+
+25. **`new-game-kickoff` sequence gained two tasks, not two bolted-on
+    appendices.** `validate-concept` (market-analyst) was inserted as the
+    project's new first task, before `define-game-pillars`, since a concept
+    that fails `concept-validation` should be killed/reshaped before pillar
+    work starts — `define-game-pillars/TASK.md` now states it runs only after
+    a PROCEED verdict. `set-perf-budget` (performance-analyst) was inserted
+    into Pre-Production alongside `select-engine`/`decompose-systems`, and
+    `build-prototype/TASK.md` was updated to require measuring the prototype
+    against `design/perf-budget.md` on the low-tier device band specifically,
+    not just the best available test device. `PROJECT.md`'s milestone
+    descriptions were updated to reflect both insertions.
+
+26. **`mobile-launch`'s 9 tasks use a `## Next Task` field even though the
+    pre-existing `new-game-kickoff` task convention has no such field.** The
+    issue explicitly requires "next task (chained in this order)" for this
+    project. Rather than retrofit every existing task file across the
+    package with a new required field (out of scope for this phase and not
+    requested), `## Next Task` was added only to `mobile-launch`'s 9 new
+    tasks and to the 2 new `new-game-kickoff` tasks (`validate-concept`,
+    `set-perf-budget`) where the explicit chain was relevant context, as an
+    additive convention — it does not remove or conflict with anything in
+    the existing `TASK.md` frontmatter/body shape.
+
+27. **`store-submission-soft-launch` and `go-no-go-global-launch` task
+    slugs.** The issue's table names step 4 "store-submission — soft-launch
+    build" and step 7 "go/no-go global launch" as prose, not literal slugs.
+    Chose `store-submission-soft-launch` and `go-no-go-global-launch` as the
+    directory slugs (filesystem-safe, descriptive, distinct from the
+    `store-submission` skill name they invoke) — recorded here since the
+    issue didn't specify exact slugs.
+
+28. **`continuous-improvement` project has one recurring task, explicitly
+    self-looping.** Per the issue's instruction, `improvement-cycle`'s
+    `TASK.md` states its own "Next Task" is itself, run again at the next
+    sprint end, with no terminal state — this is the only task in this
+    project and is expected to remain so; the project's `PROJECT.md`
+    explicitly states it has no milestones in the usual progressing-to-
+    completion sense, unlike `new-game-kickoff` and `mobile-launch`.
