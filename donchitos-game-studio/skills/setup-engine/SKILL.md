@@ -13,6 +13,16 @@ metadata:
     usage: adapted
 ---
 
+**Studio scope**: This studio is Unity-only, targeting iOS and Android (see
+`COMPANY.md`). Engine choice is therefore not an open decision — always
+resolve `engine.name` to `unity` unless a project file already pins something
+else from before this studio's Unity-only policy took effect, in which case
+flag the mismatch and escalate to technical-director rather than silently
+reconfiguring. The Godot and Unreal branches retained in this skill's body are
+inert reference material inherited from the upstream multi-engine template;
+they are not reachable in normal operation and their dedicated specialist
+routing has been removed (see `DECISIONS.md`).
+
 When this skill is invoked:
 
 *(Autonomous step: resolve the relevant configuration/state described below before proceeding — no interactive prompt is required; use current project files and `docs/config-resolution.md` as the source of defaults.)*
@@ -360,28 +370,9 @@ Also populate the `## Engine Specialists` section in `technical-preferences.md` 
 | General architecture review | unity-specialist |
 ```
 
-**For Unreal:**
-```markdown
-## Engine Specialists
-- **Primary**: unreal-specialist
-- **Language/Code Specialist**: ue-blueprint-specialist (Blueprint graphs) or unreal-specialist (C++)
-- **Shader Specialist**: unreal-specialist (no dedicated shader specialist — primary covers materials)
-- **UI Specialist**: ue-umg-specialist (UMG widgets, CommonUI, input routing, widget styling)
-- **Additional Specialists**: ue-gas-specialist (Gameplay Ability System, attributes, gameplay effects), ue-replication-specialist (property replication, RPCs, client prediction, netcode)
-- **Routing Notes**: Invoke primary for C++ architecture and broad engine decisions. Invoke Blueprint specialist for Blueprint graph architecture and BP/C++ boundary design. Invoke GAS specialist for all ability and attribute code. Invoke replication specialist for any multiplayer or networked systems. Invoke UMG specialist for all UI implementation.
-
-### File Extension Routing
-
-| File Extension / Type | Specialist to Spawn |
-|-----------------------|---------------------|
-| Game code (.cpp, .h files) | unreal-specialist |
-| Shader / material files (.usf, .ush, Material assets) | unreal-specialist |
-| UI / screen files (.umg, UMG Widget Blueprints) | ue-umg-specialist |
-| Scene / prefab / level files (.umap, .uasset) | unreal-specialist |
-| Native extension / plugin files (Plugin .uplugin, modules) | unreal-specialist |
-| Blueprint graphs (.uasset BP classes) | ue-blueprint-specialist |
-| General architecture review | unreal-specialist |
-```
+**Unreal**: not applicable — this studio is Unity-only (see `COMPANY.md`). The
+Unreal-specific specialist routing that shipped upstream was removed along
+with the `unreal-specialist`/`ue-*-specialist` agents; see `DECISIONS.md`.
 
 ### Collaborative Step
 Present the filled-in preferences to the user. For Godot, include the chosen language and note where the full naming conventions and routing tables live:
@@ -496,11 +487,9 @@ Section 5 (**A3** in `skills/setup-engine/references/godot-language-config.md` f
 
 | Engine / language | `code` | `shader` | `ui` | `additional` |
 |-------------------|--------|----------|------|--------------|
-| Godot — GDScript | godot-gdscript-specialist | godot-shader-specialist | godot-specialist | [godot-gdextension-specialist] |
-| Godot — C# | godot-csharp-specialist | godot-shader-specialist | godot-specialist | [godot-gdextension-specialist] |
-| Godot — Both | godot-gdscript-specialist | godot-shader-specialist | godot-specialist | [godot-csharp-specialist, godot-gdextension-specialist] |
 | Unity | unity-specialist | unity-shader-specialist | unity-ui-specialist | [unity-dots-specialist, unity-addressables-specialist] |
-| Unreal | unreal-specialist | unreal-specialist | ue-umg-specialist | [ue-gas-specialist, ue-blueprint-specialist, ue-replication-specialist] |
+
+*(Godot and Unreal rows removed — this studio is Unity-only; see `DECISIONS.md`.)*
 
 ```yaml
 specialists:
@@ -1239,7 +1228,7 @@ Verdict: **COMPLETE** — engine configured and reference docs populated.
 - If reference docs already exist for a different engine, ask before replacing
 - Always show the user what you're about to change before making CLAUDE.md edits
 - If WebSearch returns ambiguous results, show the user and let them decide
-- When the user chose **GDScript**: copy the GDScript CLAUDE.md template from **A1** in `skills/setup-engine/references/godot-language-config.md` exactly. NEVER add "C++ via GDExtension" to the Language field. GDScript projects may use GDExtension, but it is not a primary project language. The `godot-gdextension-specialist` in the routing table is available for when native extensions are needed — it does not make C++ a project language.
+- When the user chose **GDScript**: copy the GDScript CLAUDE.md template from **A1** in `skills/setup-engine/references/godot-language-config.md` exactly. NEVER add "C++ via GDExtension" to the Language field. GDScript projects may use GDExtension, but it is not a primary project language. (Godot support, including GDExtension routing, was removed from this studio; see `DECISIONS.md`.)
 
 ---
 

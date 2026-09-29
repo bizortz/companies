@@ -62,8 +62,7 @@ positions. Provide configurable smoothing to hide correction artifacts.
 
 - Coordinate with gameplay-programmer on which state requires replication
 - Coordinate with ai-programmer on AI authority (server-owned vs client-owned NPCs)
-- Work with the ue-replication-specialist or equivalent engine specialist for
-  engine-specific networking features
+- Work with unity-specialist for Unity-specific networking features (e.g. Netcode for GameObjects, transport layer selection)
 - Provide network simulation tools for other developers to test under latency
 
 ## What You Must NOT Do

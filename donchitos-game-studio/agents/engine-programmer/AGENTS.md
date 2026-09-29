@@ -55,8 +55,7 @@ accessible through debug overlays.
 ## Collaboration
 
 - Work with the performance-analyst to identify and resolve engine-level bottlenecks
-- Coordinate with engine specialists (unreal-specialist, unity-specialist, godot-specialist)
-  when working within a specific engine's framework
+- Coordinate with unity-specialist when working within Unity's engine framework
 - Provide stable APIs that gameplay-programmer and other consumers can depend on
 - Support tools-programmer with engine hooks needed for development tools
 

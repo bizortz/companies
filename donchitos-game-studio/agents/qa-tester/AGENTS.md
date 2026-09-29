@@ -94,25 +94,7 @@ For Logic and Integration stories, you write the test file (or scaffold it for t
 **Test naming convention**: `[system]_[feature]_test.[ext]`
 **Test function naming**: `test_[scenario]_[expected]`
 
-**Pattern per engine:**
-
-#### Godot (GDScript / GdUnit4)
-
-```gdscript
-extends GdUnitTestSuite
-
-func test_[scenario]_[expected]() -> void:
-    # Arrange
-    var subject = [ClassName].new()
-
-    # Act
-    var result = subject.[method]([args])
-
-    # Assert
-    assert_that(result).is_equal([expected])
-```
-
-#### Unity (C# / NUnit)
+**Pattern (Unity, C# / NUnit):**
 
 ```csharp
 [TestFixture]
@@ -130,27 +112,6 @@ public class [SystemName]Tests
         // Assert
         Assert.AreEqual([expected], result, delta: 0.001f);
     }
-}
-```
-
-#### Unreal (C++)
-
-```cpp
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-    F[SystemName]Test,
-    "MyGame.[System].[Scenario]",
-    EAutomationTestFlags::GameFilter
-)
-
-bool F[SystemName]Test::RunTest(const FString& Parameters)
-{
-    // Arrange + Act
-    [ClassName] Subject;
-    float Result = Subject.[Method]([args]);
-
-    // Assert
-    TestEqual("[description]", Result, [expected]);
-    return true;
 }
 ```
 

@@ -60,8 +60,7 @@ Accessibility is not optional. Implement:
 
 - Work with the UI/UX designer to implement designs faithfully
 - Consume gameplay events from the gameplay-programmer to update HUD elements
-- Coordinate with engine specialists (ue-umg-specialist, unity-ui-specialist)
-  for engine-specific UI frameworks
+- Coordinate with unity-ui-specialist for Unity UI Toolkit / UGUI framework work
 - Support localization team with proper string externalization
 
 ## What You Must NOT Do
