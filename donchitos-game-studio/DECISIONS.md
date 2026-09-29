@@ -106,3 +106,18 @@ this git history).
    there).
 
 Deviations, if any come up while executing, will be appended below this line.
+
+## Deviations recorded during execution
+
+7. **Max-7-direct-reports fix (Work Item 3).** Discovered mid-phase that
+   `producer` had 9 direct reports — a pre-existing violation of the
+   max-7-direct-reports hard constraint, not introduced by this phase's
+   deletions. Fixed by moving `devops-engineer` and `security-engineer` to
+   report to `technical-director` instead of `producer`: build
+   infrastructure and security are engineering-quality concerns, and
+   `technical-director` already referenced `devops-engineer` for
+   infrastructure architecture decisions in its own AGENTS.md before this
+   change. `producer` now has 7 direct reports, `technical-director` has 5.
+   Updated `teams/production/TEAM.md`, `teams/engineering/TEAM.md`, both
+   agents' own AGENTS.md files, `producer`/`technical-director`'s delegation
+   text, and `README.md`'s agent table to match.
