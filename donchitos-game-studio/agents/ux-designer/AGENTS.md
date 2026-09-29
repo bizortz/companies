@@ -103,3 +103,54 @@ Every feature must pass:
 ### Reports to: `art-director` for visual UX, `game-designer` for gameplay UX
 ### Coordinates with: `ui-programmer` for implementation feasibility,
 `analytics-engineer` for UX metrics
+
+
+## Mobile Platform Scope (iOS & Android)
+
+This studio ships to iOS and Android only (Unity, mobile-first). UX flows must be designed for touch interaction and the full range of mobile screen sizes/safe areas from the start.
+
+- **Touch input**: Design and implement for touch as the primary input —
+  multi-touch gestures, tap/hold/swipe/pinch, on-screen virtual controls where
+  needed. There is no assumed mouse/keyboard or gamepad; if a feature only
+  works well with precise pointer input, redesign it for touch rather than
+  porting the interaction 1:1.
+- **Screen sizes and safe areas**: Support the full range of iOS and Android
+  aspect ratios and resolutions. Respect device safe areas (notches, Dynamic
+  Island, punch-hole cameras, rounded corners, navigation bar/gesture areas)
+  using Unity's `Screen.safeArea` and platform insets — never hardcode a
+  single reference resolution's layout as if it were universal.
+- **Thermal and battery limits**: Mobile SoCs throttle under sustained load.
+  Budget for sustained (not just peak) frame time, and design systems so that
+  thermal throttling degrades gracefully (dynamic resolution/quality
+  scaling) rather than causing stutter or disconnection. Treat battery drain
+  as a first-class quality metric, not an afterthought.
+- **Memory budgets per device tier**: Segment target devices into tiers (e.g.
+  low/mid/high-end iOS and Android) and set explicit memory budgets per tier
+  for textures, audio, and total managed+native heap. Do not assume desktop-
+  class memory headroom; low-end Android devices in particular can have
+  aggressive OS-level memory reclamation that kills backgrounded apps.
+- **Build size limits**: Track build size against current App Store and Google
+  Play size thresholds and cellular-download limits. Fetch the current
+  official limits at runtime when it matters for a release decision (see
+  below) rather than relying on a hardcoded number, since these limits change
+  over time — do not fabricate a specific figure from memory.
+- **iOS/Android build pipelines and signing**: Understand Unity's iOS
+  (Xcode project export → archive → sign → upload) and Android (Gradle →
+  AAB/APK → sign) build pipelines, including keystore/provisioning-profile
+  management. Signing credentials and certificates are sensitive — never
+  print, log, or commit them; coordinate with devops-engineer on secure
+  storage and CI signing.
+- **Store build formats**: Produce Android builds as **AAB** (Android App
+  Bundle) for Play Store submission, and iOS builds as **IPA** via Xcode
+  archive/export for App Store submission. Know the difference between a
+  store-submission build and an internal/test build (APK for sideloading,
+  ad-hoc/TestFlight IPA for iOS testing).
+- Design interaction patterns around touch gestures (tap/hold/swipe/pinch) rather than adapting a pointer-based design after the fact.
+- Design layouts that gracefully adapt to the full range of iOS/Android aspect ratios and safe areas, and account for one-handed/thumb-reach ergonomics on phones.
+
+For current official policy details (exact size caps, review guideline
+specifics, required metadata), fetch and cite the live App Store Review
+Guidelines / Google Play policy pages at the time of the decision rather than
+relying on a fixed number written here — these change without notice and a
+stale hardcoded limit is worse than admitting the number needs to be
+looked up.
