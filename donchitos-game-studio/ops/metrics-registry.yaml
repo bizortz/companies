@@ -1,0 +1,134 @@
+# Metrics registry — the canonical definition of every metric this studio
+# measures itself by.
+#
+# THIS FILE IS IMMUTABLE TO ALL AGENTS EXCEPT `analytics-engineer`. No other
+# agent — including `org-improvement-lead` and any agent acting under the
+# `improvement-cycle` skill — may edit this file, ever. The self-improvement
+# loop reads these definitions and this file's `min_sample` values to decide
+# whether an experiment's result is trustworthy; if the improvement loop
+# could also redefine what counts as improvement, it could talk itself into
+# keeping a change that isn't actually working. `analytics-engineer` may
+# revise a definition (e.g. to fix a measurement bug) but must log the
+# revision, its rationale, and its effective date to `ops/decision-log.md` —
+# a silent redefinition would make every prior measurement using this metric
+# incomparable to any future one.
+#
+# Each metric has: id, definition, source, owner, direction (up|down — which
+# way is "better"), min_sample (the minimum sample size/count below which a
+# reading is not trustworthy enough to act on).
+
+version: 1
+
+metrics:
+  - id: gate_pass_rate_first_attempt
+    definition: >
+      Fraction of gate-check / milestone-review / story-readiness evaluations
+      that return PASS (not CONCERNS/FAIL) on the first attempt, without a
+      prior FAIL on the same artifact.
+    source: ops/decision-log.md entries logging gate-check/milestone-review/story-readiness verdicts
+    owner: analytics-engineer
+    direction: up
+    min_sample: 10
+
+  - id: bug_escape_rate
+    definition: >
+      Bugs found after release (post-ship) divided by total bugs found
+      (pre-ship + post-ship) for the same release window.
+    source: production/qa/bugs/*.md, bug-triage reports, cross-referenced against release dates
+    owner: analytics-engineer
+    direction: down
+    min_sample: 20
+
+  - id: sprint_estimate_accuracy
+    definition: >
+      Ratio of actual sprint completion (story points or tasks) to estimated
+      capacity committed at sprint planning, averaged over recent sprints.
+    source: production/sprints/*, sprint-status reports
+    owner: analytics-engineer
+    direction: up
+    min_sample: 5
+
+  - id: rework_rate
+    definition: >
+      Fraction of approved artifacts (design docs, code merges, story-done
+      marks) that are materially revised after approval within the same
+      milestone.
+    source: story-done / story-readiness / gate-check records, version history of the artifact
+    owner: analytics-engineer
+    direction: down
+    min_sample: 15
+
+  - id: decision_reversal_rate
+    definition: >
+      Fraction of ops/decision-log.md entries that are later explicitly
+      reversed or superseded by a contradicting entry.
+    source: ops/decision-log.md
+    owner: analytics-engineer
+    direction: down
+    min_sample: 15
+
+  - id: crash_free_sessions
+    definition: >
+      Fraction of live game sessions with no crash, per the studio's crash
+      telemetry pipeline.
+    source: live crash telemetry / stability dashboards
+    owner: analytics-engineer
+    direction: up
+    min_sample: 1000
+
+  - id: retention_d1
+    definition: Fraction of D0 installs still active on day 1.
+    source: analytics pipeline / kpi-review
+    owner: analytics-engineer
+    direction: up
+    min_sample: 200
+
+  - id: retention_d7
+    definition: Fraction of D0 installs still active on day 7.
+    source: analytics pipeline / kpi-review
+    owner: analytics-engineer
+    direction: up
+    min_sample: 200
+
+  - id: retention_d30
+    definition: Fraction of D0 installs still active on day 30.
+    source: analytics pipeline / kpi-review
+    owner: analytics-engineer
+    direction: up
+    min_sample: 200
+
+  - id: cpi
+    definition: >
+      Cost per install — total UA spend in a channel/campaign divided by
+      installs attributed to it.
+    source: ua-campaign spend records, ad-network dashboards
+    owner: analytics-engineer
+    direction: down
+    min_sample: 100
+
+  - id: roas
+    definition: >
+      Return on ad spend — attributed revenue from a cohort divided by the
+      UA spend that acquired it, at a stated time window (e.g. D30 ROAS).
+    source: kpi-review / ua-campaign records
+    owner: analytics-engineer
+    direction: up
+    min_sample: 100
+
+  - id: store_rejection_count
+    definition: >
+      Count of store submissions (iOS + Android combined) rejected by the
+      platform reviewer in a given period.
+    source: ops/releases/*-submission-*.md
+    owner: analytics-engineer
+    direction: down
+    min_sample: 3
+
+# --- Enforcement note ---
+#
+# improvement-cycle and org-improvement-lead treat every metric above as
+# read-only input. Any proposal that would require a new metric or a change
+# to an existing definition is not something the improvement loop applies
+# itself — it is written up as a request to analytics-engineer, who decides
+# and edits this file directly if warranted, logging the change to
+# ops/decision-log.md.

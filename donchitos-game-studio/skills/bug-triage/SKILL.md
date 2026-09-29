@@ -254,6 +254,12 @@ If user declined write:
 
 ---
 
+## 7. Evidence Capture (Improvement Loop)
+
+If this triage surfaced a systemic issue (3+ bugs from the same system, 2+ S1/S2 bugs in one story, or a regression against a completed story — see the Deviation check in Step 3), append a structured finding to `ops/learnings/<date>-bug-triage.md` with these fields: `finding` (the systemic pattern observed, not an individual bug), `affected agent/skill` (the system/agent whose output produced the pattern), `evidence` (file refs — the specific bug report files), `metric affected` (`bug_escape_rate` from `ops/metrics-registry.yaml`, or another registry id if more specific), and `severity` (using the same S1-S4 scale as bug classification). Skip this step if no systemic pattern was flagged this run — a routine triage with only isolated bugs produces no learnings entry.
+
+---
+
 ## Autonomous Operating Protocol
 
 - **qa-lead decides Won't Fix closures directly** — surface P4 candidates, close the clear ones, and log the closures to `ops/decision-log.md`; escalate to producer only if closing one would cut previously-committed scope.

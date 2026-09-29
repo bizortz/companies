@@ -156,6 +156,10 @@ Verdict: **COMPLETE** — playtest report generated.
 - After addressing design changes: re-run `/design-review` on the updated GDD.
 - After fixing bugs: re-run `/bug-triage` to update priorities.
 
+## Phase 6: Evidence Capture (Improvement Loop)
+
+For every pain point, confusion point, and top-3-priority finding recorded above that points at a systemic design or process issue (not a one-off bug, which is already captured via `bug-triage`), append a structured finding to `ops/learnings/<date>-playtest-report.md`: `finding` (the specific confusion/pain point, stated as an observation), `affected agent/skill` (the design/system owner responsible for the affected feature), `evidence` (the playtest report file and session data referenced), `metric affected` (an `ops/metrics-registry.yaml` id if one applies — e.g. `retention_d1` for a first-five-minutes confusion point — or "none — qualitative"), and `severity` (S1-S4). Skip findings that are purely positive ("What worked well") — only issues worth acting on are logged here.
+
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.

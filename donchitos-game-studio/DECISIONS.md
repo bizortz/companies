@@ -270,3 +270,59 @@ Deviations, if any come up while executing, will be appended below this line.
     reference `creative-director`, `technical-director`, and `producer`, all
     of which still exist in the current 48-agent org, so no update was
     needed for org consistency.
+
+19. **`org-improvement-lead` added as the CEO's 7th direct report — exactly at
+    the cap.** The issue explicitly flagged this would bring the CEO from 6
+    to 7 and noted 7 is the max, "which is fine." Verified programmatically:
+    total agents 48 -> 49, CEO direct reports 6 -> 7, no other manager
+    exceeds 7 (`publishing-director` and `lead-programmer` are also at 7,
+    pre-existing from Phase 2/1). `org-improvement-lead` has no `TEAM.md`,
+    matching the existing pattern for `finance-controller` and
+    `legal-compliance-officer` (individual CEO-direct functions without a
+    department to lead).
+
+20. **`ops/metrics-registry.yaml` ownership and immutability enforced by
+    convention, not tooling.** The issue requires the registry be "immutable
+    to all agents except analytics-engineer, and never editable by
+    improvement agents." This package has no runtime permission-enforcement
+    mechanism (agents are prompted roles, not sandboxed processes), so this
+    is enforced the same way every other guardrail in this package is
+    enforced: stated explicitly and repeatedly in the file's own header
+    comment, in `skills/improvement-cycle/SKILL.md`'s frontmatter-adjacent
+    autonomy note and Purpose section, and in `agents/org-improvement-lead/
+    AGENTS.md`'s "What You Must NOT Do" list — three independent places an
+    agent reading its own instructions would see the constraint before
+    acting.
+
+21. **Evidence-capture step added to `bug-triage`, `gate-check`,
+    `retrospective`, and `playtest-report`; `kpi-review` already had it as
+    Work Item 6 was written with the outcome loop in mind.** Each insertion
+    is placed after that skill's own final report-generation step and before
+    its closing Procedure/Output boilerplate, uses the exact five required
+    fields (finding, affected agent/skill, evidence, metric affected,
+    severity), and explicitly states when to skip the step (e.g. a clean
+    first-attempt gate-check PASS, or a playtest's purely positive findings)
+    so the loop isn't flooded with non-signal entries.
+
+22. **`improvement-cycle`'s trigger was added to `retrospective`'s Handoff
+    section, not `sprint-plan`'s**, per the issue's own preference ("if both
+    exist, add it to retrospective") — both exist in this package.
+    `retrospective` already runs at sprint end and already had a natural
+    "Phase 6: Next Steps" handoff point; a new `## Handoff` section was added
+    immediately after it (and after the new evidence-capture Phase 7) rather
+    than renaming the existing "Phase 6: Next Steps" section, to avoid
+    disturbing that section's existing cross-references from other skills.
+
+23. **New-skill frontmatter for `improvement-cycle`** uses the same
+    `metadata.sources: [{kind: original, usage: original, authored_for:
+    donchitos-game-studio, phase: 3}]` convention established for the Work
+    Item 6 skills (decision #17 above) — it is also original to this
+    package, not upstream-sourced.
+
+24. **README.md's Agents and Skills tables were regenerated programmatically**
+    from the actual on-disk frontmatter (same approach as Phase 1/2), rather
+    than hand-edited, to guarantee the 49-agent/66-skill counts and every row
+    match reality exactly. The prose above those tables, and `COMPANY.md`'s
+    organizational-tiers paragraph, were hand-edited to add
+    `org-improvement-lead` and remove the now-resolved "8 skills not yet
+    created" note.

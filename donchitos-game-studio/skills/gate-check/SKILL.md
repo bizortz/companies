@@ -766,6 +766,12 @@ Based on the verdict, suggest specific next steps:
 
 ---
 
+## 8b. Evidence Capture (Improvement Loop)
+
+If the verdict is CONCERNS or FAIL, or if this is a PASS that follows a prior FAIL/CONCERNS on the same artifact (i.e. it did not pass on the first attempt), append a structured finding to `ops/learnings/<date>-gate-check.md`: `finding` (which required artifact or quality check failed/was late, stated plainly), `affected agent/skill` (whichever director/agent owns the missing or failing artifact), `evidence` (the specific missing-artifact list or failing-check output from Step 5's verdict block), `metric affected` (`gate_pass_rate_first_attempt` from `ops/metrics-registry.yaml`), and `severity` (S1 if it blocks the phase transition entirely, scaling down for partial CONCERNS). A clean first-attempt PASS produces no learnings entry — only misses and rework are signal here.
+
+---
+
 ## Collaborative Protocol
 
 This skill follows the autonomous gate-check principle:

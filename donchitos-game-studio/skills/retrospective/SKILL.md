@@ -255,6 +255,14 @@ By default, proceed to invoke `/sprint-plan new`, passing the retrospective file
 - Check whether previous action items were completed. Recurring unaddressed items are a process smell.
 - If this is a milestone retrospective, also evaluate whether the milestone goals were achieved and what that means for the overall project timeline.
 
+## Phase 7: Evidence Capture (Improvement Loop)
+
+For every "What Went Poorly" item, every blocker, and every carryover/estimation-accuracy miss identified above, append a structured finding to `ops/learnings/<date>-retrospective.md`: `finding` (the specific process or quality issue, not a vague summary), `affected agent/skill` (whoever owns the affected process or artifact), `evidence` (file refs — the sprint file, bug reports, or specific artifacts the finding is drawn from), `metric affected` (an id from `ops/metrics-registry.yaml` — e.g. `sprint_estimate_accuracy` for an estimation miss, `rework_rate` for carryover caused by rework, or "none — qualitative" if no registry metric applies), and `severity` (S1-S4, same scale as bug-triage). "What Went Well" items are not logged as learnings — this step captures only what should change.
+
+## Handoff
+
+Hand off the completed retrospective file and its action items to `/sprint-plan new` per Phase 6 above. In addition, this retrospective's `ops/learnings/` entries (written in Phase 7) are the trigger for `org-improvement-lead` to run the `improvement-cycle` skill: retrospective is run at every sprint end, and the improvement cycle runs immediately after, consuming everything written to `ops/learnings/` since its last run (from this retrospective and from any `kpi-review`, `bug-triage`, `gate-check`, or `playtest-report` runs in the same window). If this was a milestone retrospective, also hand off to `/gate-check` per Phase 6.
+
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
