@@ -365,3 +365,97 @@ Deviations, if any come up while executing, will be appended below this line.
     project and is expected to remain so; the project's `PROJECT.md`
     explicitly states it has no milestones in the usual progressing-to-
     completion sense, unlike `new-game-kickoff` and `mobile-launch`.
+
+---
+
+# Phase 4 (Work Items 9, 10, 11)
+
+29. **Model tiers assigned per-agent, never per-skill.** Confirmed no
+    `SKILL.md` in this package (or in `paperclipai/companies` conventions
+    generally) declares a `model:` frontmatter key that the runtime actually
+    applies — Phase 1's inherited `docs/model-tiers.md` said as much for
+    upstream. Verified via grep that zero of the 66 `SKILL.md` files carry a
+    `model:` key, so no stripping was actually required (Work Item 10.3.4's
+    checklist item is a no-op here, confirmed rather than skipped). Tiering
+    is applied exclusively via `agents/*/AGENTS.md` `metadata.modelTier` /
+    `metadata.model` / `metadata.effort`, with `ops/model-tiers.yaml` as the
+    single source of truth both are checked against by `scripts/validate.sh`.
+
+30. **Tier assignment matched the issue's list exactly, no defaults needed.**
+    Cross-checked the issue's 6/41/2 breakdown against the actual 49-agent
+    directory listing: every agent slug named in the issue exists verbatim
+    (no slug drift from earlier phases), and every one of the 49 on-disk
+    agents is covered by exactly one tier bucket with no leftovers. No agent
+    needed the "default to Tier 2 and note it" fallback.
+
+31. **`docs/model-tiers.md` fully replaced, not incrementally edited.** Per
+    the issue's explicit instruction and Phase 1's own flag that this file
+    was "left largely as-is... for a later phase," the entire
+    upstream-inherited skill-tier content (haiku/sonnet/opus skill lists,
+    the "declared not applied" banner) was removed and replaced with the
+    per-agent Tier 1/2/3 table, behavioral contracts, the 49-agent
+    assignment, the pre-decision summary pairings, and the Tier-1-only-skill
+    rule — all cross-referencing `ops/model-tiers.yaml` as the source of
+    truth rather than duplicating the full per-agent list in prose.
+
+32. **Pre-decision summary pairings implemented as a `## Model Tier` body
+    section on every agent, not a separate document.** Rather than
+    maintaining the six pairings (`producer`←`qa-lead`&`lead-programmer`,
+    `creative-director`←`game-designer`, `technical-director`←
+    `lead-programmer`, `publishing-director`←`market-analyst`&
+    `analytics-engineer`, `ceo`←`finance-controller`&the four directors,
+    `org-improvement-lead`←`analytics-engineer`) in a standalone file that
+    could drift from the agents' own bodies, each named agent's own
+    `AGENTS.md` `## Model Tier` section states its role in the pairing
+    directly (as either the Tier 1 consumer or the Tier 2 preparer),
+    cross-referencing `docs/model-tiers.md` for the canonical list.
+
+33. **Tier-1-only-skill check found zero violations, not a gap to fix.**
+    Grepped every non-Tier-1 agent's `skills:` frontmatter for `gate-check`,
+    `milestone-review`, `portfolio-review`, `improvement-cycle` before making
+    any change: all four already appear only on Tier 1 agents (`ceo`,
+    `producer`, `technical-director`, `org-improvement-lead`) from earlier
+    phases' authoring. No agent needed a skill removed or an escalation
+    line added beyond the generic one already placed in every Tier 2/3
+    agent's `## Model Tier` section.
+
+34. **`teams/*/TEAM.md` includes lists required no changes.** Verified
+    programmatically that every one of the 49 agents appears in exactly one
+    team's `includes` list, is itself a team's `manager`, or is one of the
+    four individual CEO-direct functions with no department to lead (`ceo`,
+    `finance-controller`, `legal-compliance-officer`,
+    `org-improvement-lead` — an established pattern from Phases 2-3). The
+    pre-existing `teams/unity/TEAM.md` split (Unity Specialist's subtree
+    gets its own team file, separate from `teams/engineering/TEAM.md`, even
+    though `unity-specialist` reports to `lead-programmer` within
+    Technical Director's org) was left as-is — a deliberate earlier-phase
+    convention, not a Work Item 9 defect.
+
+35. **`images/org-chart.png` not regenerated — no generation tooling exists
+    in this repo.** Searched for any script referenced by `README.md` or
+    `COMPANY.md` that produces the PNG; none exists (it was exported once by
+    external Paperclip tooling at package-creation time). Per the issue's
+    own fallback instruction, added `docs/org-chart.mermaid` instead —
+    generated programmatically from `agents/*/AGENTS.md` `reportsTo` and
+    `metadata.modelTier`, colored by tier — and documented in `README.md`
+    that the Mermaid file, not the stale PNG, is authoritative going
+    forward.
+
+36. **`ops/` skeleton additions were purely additive.** `targets.yaml`,
+    `always-ask.yaml`, `metrics-registry.yaml`, `decision-log.md`,
+    `learnings/`, and `improvements/ledger.md` all already existed from
+    Phases 1-3 and were left untouched (checked first, per the issue's own
+    instruction). Only `ops/metrics/README.md`, `ops/reports/README.md`,
+    `ops/reports/market/README.md`, and `ops/reports/validation/README.md`
+    were newly created — each a directory-tracking README (matching the
+    `ops/learnings/README.md` precedent) rather than a bare `.gitkeep`,
+    since the expected file-naming format needed documenting somewhere
+    anyway.
+
+37. **`scripts/validate.sh` is a new Python script invoked by a thin shell
+    wrapper**, not a from-scratch bash reimplementation of all 13 checks —
+    bash is a poor fit for YAML/frontmatter parsing across 49+66 files.
+    `scripts/validate.sh` execs `python3 scripts/validate.py`, keeping the
+    filename the issue asked for while writing the actual logic in Python
+    (already this package's convention for every ad hoc verification pass
+    across Phases 1-3, per `PROGRESS.md`).

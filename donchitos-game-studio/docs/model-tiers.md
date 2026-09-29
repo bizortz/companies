@@ -1,55 +1,90 @@
 # Model Tier Assignment
 
-> ### DECLARED, NOT CURRENTLY APPLIED — skills only
->
-> **Claude Code reads `model:` from a skill's frontmatter and then serves the
-> skill from the session's model anyway.** This has been measured directly
-> against session transcripts on several Claude Code versions, and held every
-> time. To re-test it on a newer version, run a skill that declares a tier
-> different from the session model and check which model the transcript
-> attributes the skill's turns to.
->
-> So the skill tiers below are **intent, not behaviour**. Setting one changes
-> nothing today. They are kept because they are correct descriptions of what each
-> skill needs, and because they cost nothing to carry if Claude Code honours them
-> later — but do not budget on them, and never tell a user a tier is saving them
-> money.
->
-> **This does NOT apply to agents.** `model:` in `agents/*.md` is a
-> different mechanism, spawned as a separate session rather than executed inline.
-> It has not been measured here, so treat the agent section below as unverified
-> in either direction rather than assuming it behaves the same way.
+This document is the human-readable description of the studio's model-tier
+system. The machine-readable single source of truth is
+`ops/model-tiers.yaml`, which every agent's `AGENTS.md`
+`metadata.modelTier`/`metadata.model`/`metadata.effort` frontmatter fields
+must agree with exactly — `scripts/validate.sh` enforces this.
 
-Skills and agents are assigned tiers by task complexity:
+This replaces the Phase 1 upstream-inherited version of this file entirely.
+Phase 1's version declared tiers **per skill** (`model:` in `SKILL.md`
+frontmatter) and noted that Claude Code did not actually honor that
+mechanism. This package now assigns tiers **per agent only** — a skill runs
+on the model of the agent invoking it, never its own declared model. Every
+`model:` frontmatter key has been stripped from every `SKILL.md` file (see
+`DECISIONS.md`).
 
-| Tier | Model | When to use |
-|------|-------|-------------|
-| **Haiku** | `claude-haiku-4-5-20251001` | Read-only status checks, formatting, simple lookups — no creative judgment needed |
-| **Sonnet** | `claude-sonnet-5` | Implementation, design authoring, analysis of individual systems — default for most work |
-| **Opus** | `claude-opus-5` | Multi-document synthesis, high-stakes phase gate verdicts, cross-system holistic review |
+## Tier Definitions
 
-Skills with `model: haiku` (5): `/help`, `/onboard`, `/project-stage-detect`,
-`/scope-check`, `/sprint-status`
+| Tier | Model | Effort | Role |
+|---|---|---|---|
+| 1 | `claude-opus-5-5` | high | Decides only. Reads summaries, rules on options, issues verdicts. Produces no drafts, code, assets, or specs. |
+| 2 | `claude-sonnet-5` | low | Thinking work: design, code, creative, analysis, problem solving, department-level review. |
+| 3 | `claude-haiku-4-5-20251001` | auto (no effort param; runtime default) | High-volume, repetitive, rule-following work with fixed templates. |
 
-> `/patch-notes` and `/changelog` are `sonnet`, not `haiku`: both produce
-> **player-facing** copy and need judgement the cheapest tier is defined as not
-> doing. Full reasoning in each skill's own header.
->
-> `/settings` was moved off `haiku` for the same reason. It does not only read
-> and format — it resolves every leaf with provenance and then compares the
-> configured rigor against the project's observable working practice. That is
-> synthesis, which is what the Haiku row is defined as excluding.
+## Behavioral Contracts
 
-Skills with `model: opus` (3): `/architecture-review`, `/gate-check`, `/review-all-gdds`
+- **Tier 1** must NOT draft artifacts or perform execution work. Input is
+  summaries of one page or less, prepared by Tier 2 reports. Output is a
+  decision in the fixed template only. Delegates everything else.
+- **Tier 2** owns execution in its domain. Escalates to its Tier 1 manager
+  only decisions that are cross-domain, irreversible, or listed in
+  `ops/always-ask.yaml`. Delegates mechanical volume to a Tier 3 agent where
+  one exists.
+- **Tier 3** follows the skill procedure exactly, uses output templates
+  verbatim, makes no judgment calls. Anything ambiguous or outside the
+  template escalates to its manager.
 
-All other skills are Sonnet. When creating a new skill, assign Haiku if it only
-reads and formats; assign Opus if it must synthesize 5+ documents with
-high-stakes output; otherwise write `model: sonnet` explicitly. Every skill in
-this repo declares a tier, and the lists above are kept in step with what the
-`SKILL.md` files declare. That is a check on two descriptions agreeing; it
-proves nothing about which model actually runs.
+## Assignment (49 agents)
 
-**Agent model tiers.** Orchestrator-spawned agents (`team-*`, `/review-all-gdds`)
-use `model: inherit` so a fixed smaller model can't overflow when the parent runs
-a large-context tier. Directors stay `opus`, `community-manager`/`devops-engineer`
-stay `haiku`, and non-orchestrator agents stay pinned at `sonnet` as a floor.
+**Tier 1 (6):** `ceo`, `creative-director`, `technical-director`, `producer`,
+`publishing-director`, `org-improvement-lead`.
+
+**Tier 3 (2):** `qa-tester`, `player-support`.
+
+**Tier 2 (41):** every other agent — the full breakdown lives in
+`ops/model-tiers.yaml` and is reflected into every agent's own `AGENTS.md`
+`## Model Tier` section, not maintained by hand in two places.
+
+## Pre-Decision Summary Pairings
+
+Before a Tier 1 agent issues a verdict, a named Tier 2 agent prepares the
+summary that verdict is based on:
+
+- `producer` ← `qa-lead` & `lead-programmer`
+- `creative-director` ← `game-designer`
+- `technical-director` ← `lead-programmer`
+- `publishing-director` ← `market-analyst` & `analytics-engineer`
+- `ceo` ← `finance-controller` & the four directors (`creative-director`,
+  `technical-director`, `producer`, `publishing-director`)
+- `org-improvement-lead` ← `analytics-engineer`
+
+These pairings are also stated in the relevant agents' own `AGENTS.md`
+bodies.
+
+## Tier 1 Skills Are Tier-1-Only
+
+`gate-check`, `milestone-review`, `portfolio-review`, and `improvement-cycle`
+are decision-verdict skills and may only be invoked by Tier 1 agents. No
+Tier 2 or Tier 3 agent lists any of these four in its `skills:` frontmatter;
+a Tier 2 agent that needs one of these verdicts requests it from its Tier 1
+manager instead of running the skill itself.
+
+## Enforcement
+
+This is a prompt-driven package with no runtime permission mechanism, so
+tiering is enforced the same way every other guardrail here is: stated
+explicitly in this file, in `ops/model-tiers.yaml`, in every agent's own
+`## Model Tier` section, and checked structurally by `scripts/validate.sh`.
+Runtime application of `metadata.model`/`metadata.effort` is the
+responsibility of whatever system imports this package (see
+`MODIFICATION_REPORT.md`'s "Known gaps" section) — these fields are
+declarative intent, not a guarantee the import target actually runs the
+named model.
+
+## Changing a Tier
+
+Only the CEO decides to change an agent's tier, logged to
+`ops/decision-log.md`. `org-improvement-lead` may propose a tier change as
+part of an improvement-cycle finding but must never self-apply one — see
+its `AGENTS.md` Must-NOT list.

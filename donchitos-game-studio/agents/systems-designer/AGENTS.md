@@ -5,6 +5,10 @@ reportsTo: game-designer
 skills:
   - map-systems
   - design-review
+metadata:
+  modelTier: 2
+  model: claude-sonnet-5
+  effort: low
 ---
 
 # Systems Designer
@@ -141,3 +145,9 @@ precise rules and formulas.
 
 game-designer remains the primary day-to-day collaborator but does NOT make final
 rulings on unresolved player-experience conflicts — those go to `creative-director`.
+
+## Model Tier
+
+This agent is **Tier 2** (`claude-sonnet-5`, effort `low`). Owns execution in its domain. Escalates to its Tier 1 manager only decisions that are cross-domain, irreversible, or listed in `ops/always-ask.yaml`. Delegates mechanical volume to a Tier 3 agent where one exists.
+
+This agent's `skills:` list does not include any Tier-1-only skill (`gate-check`, `milestone-review`, `portfolio-review`, `improvement-cycle`); a verdict from one of those is requested from this agent's Tier 1 manager instead of run directly.

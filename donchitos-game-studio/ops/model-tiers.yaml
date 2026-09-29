@@ -1,0 +1,73 @@
+# Single source of truth for per-agent model tier assignment.
+#
+# Tiering is set PER AGENT, never per skill — no SKILL.md in this package
+# declares a `model:` key (see docs/model-tiers.md and DECISIONS.md). Every
+# agent's own agents/<slug>/AGENTS.md frontmatter `metadata.modelTier` /
+# `metadata.model` / `metadata.effort` must agree exactly with this file —
+# scripts/validate.sh enforces that.
+#
+# Tier 1 = claude-opus-5-5, effort high   — decides only, no drafting.
+# Tier 2 = claude-sonnet-5, effort low    — owns execution in its domain.
+# Tier 3 = claude-haiku-4-5-20251001, effort auto (omitted) — fixed-template,
+#          high-volume, rule-following work only.
+#
+# Counts: 6 Tier 1, 41 Tier 2, 2 Tier 3 = 49 total.
+#
+# Changing a tier is a CEO decision, logged to ops/decision-log.md.
+# org-improvement-lead may PROPOSE a change here but must never edit this
+# file directly (see its AGENTS.md Must-NOT list).
+
+version: 1
+
+tiers:
+  ceo: { tier: 1, model: claude-opus-5-5, effort: high }
+  creative-director: { tier: 1, model: claude-opus-5-5, effort: high }
+  technical-director: { tier: 1, model: claude-opus-5-5, effort: high }
+  producer: { tier: 1, model: claude-opus-5-5, effort: high }
+  publishing-director: { tier: 1, model: claude-opus-5-5, effort: high }
+  org-improvement-lead: { tier: 1, model: claude-opus-5-5, effort: high }
+
+  qa-tester: { tier: 3, model: claude-haiku-4-5-20251001, effort: auto }
+  player-support: { tier: 3, model: claude-haiku-4-5-20251001, effort: auto }
+
+  art-director: { tier: 2, model: claude-sonnet-5, effort: low }
+  audio-director: { tier: 2, model: claude-sonnet-5, effort: low }
+  narrative-director: { tier: 2, model: claude-sonnet-5, effort: low }
+  game-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  systems-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  level-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  economy-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  live-ops-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  ux-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  writer: { tier: 2, model: claude-sonnet-5, effort: low }
+  world-builder: { tier: 2, model: claude-sonnet-5, effort: low }
+  sound-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  technical-artist: { tier: 2, model: claude-sonnet-5, effort: low }
+  lead-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  engine-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  gameplay-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  ai-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  network-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  ui-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  tools-programmer: { tier: 2, model: claude-sonnet-5, effort: low }
+  prototyper: { tier: 2, model: claude-sonnet-5, effort: low }
+  performance-analyst: { tier: 2, model: claude-sonnet-5, effort: low }
+  security-engineer: { tier: 2, model: claude-sonnet-5, effort: low }
+  devops-engineer: { tier: 2, model: claude-sonnet-5, effort: low }
+  analytics-engineer: { tier: 2, model: claude-sonnet-5, effort: low }
+  accessibility-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  qa-lead: { tier: 2, model: claude-sonnet-5, effort: low }
+  release-manager: { tier: 2, model: claude-sonnet-5, effort: low }
+  localization-lead: { tier: 2, model: claude-sonnet-5, effort: low }
+  community-manager: { tier: 2, model: claude-sonnet-5, effort: low }
+  ua-manager: { tier: 2, model: claude-sonnet-5, effort: low }
+  aso-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  monetization-designer: { tier: 2, model: claude-sonnet-5, effort: low }
+  market-analyst: { tier: 2, model: claude-sonnet-5, effort: low }
+  legal-compliance-officer: { tier: 2, model: claude-sonnet-5, effort: low }
+  finance-controller: { tier: 2, model: claude-sonnet-5, effort: low }
+  unity-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  unity-dots-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  unity-shader-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  unity-addressables-specialist: { tier: 2, model: claude-sonnet-5, effort: low }
+  unity-ui-specialist: { tier: 2, model: claude-sonnet-5, effort: low }

@@ -1,0 +1,121 @@
+# Org Chart — Donchitos Game Studio (49 agents)
+
+Generated from `agents/*/AGENTS.md` frontmatter (`reportsTo` and
+`metadata.modelTier`), current as of the Work Item 9/10 pass. This is the
+canonical source for the org structure diagram; `images/org-chart.png` was
+generated once by an earlier phase's tooling and is not part of this
+package's regeneration path (no such tooling exists in this repo) — treat
+this Mermaid file as authoritative if the two ever disagree, and regenerate
+the PNG externally from this file when needed.
+
+Purple = Tier 1 (decision-only, `claude-opus-5-5`). Blue = Tier 2 (execution,
+`claude-sonnet-5`). Green = Tier 3 (high-volume/templated,
+`claude-haiku-4-5-20251001`). Full tier definitions in `docs/model-tiers.md`.
+
+```mermaid
+graph TD
+  accessibility_specialist["Accessibility Specialist<br/>T2"]
+  ai_programmer["AI Programmer<br/>T2"]
+  analytics_engineer["Analytics Engineer<br/>T2"]
+  art_director["Art Director<br/>T2"]
+  aso_specialist["App Store Optimization Specialist<br/>T2"]
+  audio_director["Audio Director<br/>T2"]
+  ceo["Studio Head & CEO<br/>T1"]
+  community_manager["Community Manager<br/>T2"]
+  creative_director["Creative Director<br/>T1"]
+  devops_engineer["DevOps Engineer<br/>T2"]
+  economy_designer["Economy Designer<br/>T2"]
+  engine_programmer["Engine Programmer<br/>T2"]
+  finance_controller["Finance Controller<br/>T2"]
+  game_designer["Lead Game Designer<br/>T2"]
+  gameplay_programmer["Gameplay Programmer<br/>T2"]
+  lead_programmer["Lead Programmer<br/>T2"]
+  legal_compliance_officer["Legal & Compliance Officer<br/>T2"]
+  level_designer["Level Designer<br/>T2"]
+  live_ops_designer["Live Operations Designer<br/>T2"]
+  localization_lead["Localization Lead<br/>T2"]
+  market_analyst["Market Analyst<br/>T2"]
+  monetization_designer["Monetization Designer<br/>T2"]
+  narrative_director["Narrative Director<br/>T2"]
+  network_programmer["Network Programmer<br/>T2"]
+  org_improvement_lead["Organizational Improvement Lead<br/>T1"]
+  performance_analyst["Performance Analyst<br/>T2"]
+  player_support["Player Support Specialist<br/>T3"]
+  producer["Producer<br/>T1"]
+  prototyper["Prototyper<br/>T2"]
+  publishing_director["Publishing Director<br/>T1"]
+  qa_lead["QA Lead<br/>T2"]
+  qa_tester["QA Tester<br/>T3"]
+  release_manager["Release Manager<br/>T2"]
+  security_engineer["Security Engineer<br/>T2"]
+  sound_designer["Sound Designer<br/>T2"]
+  systems_designer["Systems Designer<br/>T2"]
+  technical_artist["Technical Artist<br/>T2"]
+  technical_director["Technical Director<br/>T1"]
+  tools_programmer["Tools Programmer<br/>T2"]
+  ua_manager["User Acquisition Manager<br/>T2"]
+  ui_programmer["UI Programmer<br/>T2"]
+  unity_addressables_specialist["Unity Addressables Specialist<br/>T2"]
+  unity_dots_specialist["DOTS/ECS Specialist<br/>T2"]
+  unity_shader_specialist["Unity Shader/VFX Specialist<br/>T2"]
+  unity_specialist["Unity Engine Lead<br/>T2"]
+  unity_ui_specialist["Unity UI Specialist<br/>T2"]
+  ux_designer["UX Designer<br/>T2"]
+  world_builder["World Builder<br/>T2"]
+  writer["Writer<br/>T2"]
+  producer --> accessibility_specialist
+  lead_programmer --> ai_programmer
+  publishing_director --> analytics_engineer
+  creative_director --> art_director
+  publishing_director --> aso_specialist
+  creative_director --> audio_director
+  publishing_director --> community_manager
+  ceo --> creative_director
+  technical_director --> devops_engineer
+  game_designer --> economy_designer
+  lead_programmer --> engine_programmer
+  ceo --> finance_controller
+  creative_director --> game_designer
+  lead_programmer --> gameplay_programmer
+  technical_director --> lead_programmer
+  ceo --> legal_compliance_officer
+  game_designer --> level_designer
+  publishing_director --> live_ops_designer
+  producer --> localization_lead
+  publishing_director --> market_analyst
+  publishing_director --> monetization_designer
+  creative_director --> narrative_director
+  lead_programmer --> network_programmer
+  ceo --> org_improvement_lead
+  technical_director --> performance_analyst
+  community_manager --> player_support
+  ceo --> producer
+  producer --> prototyper
+  ceo --> publishing_director
+  technical_director --> qa_lead
+  qa_lead --> qa_tester
+  producer --> release_manager
+  technical_director --> security_engineer
+  audio_director --> sound_designer
+  game_designer --> systems_designer
+  art_director --> technical_artist
+  ceo --> technical_director
+  lead_programmer --> tools_programmer
+  publishing_director --> ua_manager
+  lead_programmer --> ui_programmer
+  unity_specialist --> unity_addressables_specialist
+  unity_specialist --> unity_dots_specialist
+  unity_specialist --> unity_shader_specialist
+  lead_programmer --> unity_specialist
+  unity_specialist --> unity_ui_specialist
+  art_director --> ux_designer
+  narrative_director --> world_builder
+  narrative_director --> writer
+
+  classDef tier1 fill:#5b3a8e,color:#fff,stroke:#2e1b4d;
+  classDef tier2 fill:#2f6f9f,color:#fff,stroke:#1a3d54;
+  classDef tier3 fill:#4a8a5c,color:#fff,stroke:#254a30;
+  class ceo,creative_director,org_improvement_lead,producer,publishing_director,technical_director tier1;
+  class accessibility_specialist,ai_programmer,analytics_engineer,art_director,aso_specialist,audio_director,community_manager,devops_engineer,economy_designer,engine_programmer,finance_controller,game_designer,gameplay_programmer,lead_programmer,legal_compliance_officer,level_designer,live_ops_designer,localization_lead,market_analyst,monetization_designer,narrative_director,network_programmer,performance_analyst,prototyper,qa_lead,release_manager,security_engineer,sound_designer,systems_designer,technical_artist,tools_programmer,ua_manager,ui_programmer,unity_addressables_specialist,unity_dots_specialist,unity_shader_specialist,unity_specialist,unity_ui_specialist,ux_designer,world_builder,writer tier2;
+  class player_support,qa_tester tier3;
+```

@@ -6,6 +6,10 @@ skills:
   - design-review
   - balance-check
   - brainstorm
+metadata:
+  modelTier: 2
+  model: claude-sonnet-5
+  effort: low
 ---
 
 # Game Designer
@@ -236,3 +240,11 @@ Reports to: `creative-director` for vision alignment
 Coordinates with: `lead-programmer` for feasibility, `narrative-director` for
 ludonarrative harmony, `ux-designer` for player-facing clarity, `analytics-engineer`
 for data-driven balance iteration
+
+## Model Tier
+
+This agent is **Tier 2** (`claude-sonnet-5`, effort `low`). Owns execution in its domain. Escalates to its Tier 1 manager only decisions that are cross-domain, irreversible, or listed in `ops/always-ask.yaml`. Delegates mechanical volume to a Tier 3 agent where one exists.
+
+You prepare the one-page summary `creative-director` uses before ruling on creative decisions — see `docs/model-tiers.md`.
+
+This agent's `skills:` list does not include any Tier-1-only skill (`gate-check`, `milestone-review`, `portfolio-review`, `improvement-cycle`); a verdict from one of those is requested from this agent's Tier 1 manager instead of run directly.

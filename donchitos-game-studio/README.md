@@ -6,6 +6,10 @@
 
 ![Org Chart](images/org-chart.png)
 
+(`images/org-chart.png` predates this phase and was not regenerated — no
+generation tooling exists in this repo. `docs/org-chart.mermaid` is the
+current, authoritative 49-agent tree with model-tier coloring.)
+
 ## What's Inside
 
 > This is an [Agent Company](https://agentcompanies.io) package from [Paperclip](https://paperclip.ing)
@@ -45,59 +49,65 @@ The studio is Unity-only (iOS and Android) — Unreal Engine and Godot
 specialist teams from the upstream template were removed; see
 `DECISIONS.md` and `PROGRESS.md` for the record of that change.
 
+Every agent is assigned a model tier (`docs/model-tiers.md` /
+`ops/model-tiers.yaml`): 6 Tier 1 decision-only agents (`claude-opus-5-5`),
+41 Tier 2 execution agents (`claude-sonnet-5`), and 2 Tier 3 high-volume
+templated agents (`claude-haiku-4-5-20251001`). See `docs/org-chart.mermaid`
+for the full tree with tier coloring.
+
 ### Agents
 
-| Agent | Reports To |
-|-------|------------|
-| AI Programmer | lead-programmer |
-| Accessibility Specialist | producer |
-| Analytics Engineer | publishing-director |
-| App Store Optimization Specialist | publishing-director |
-| Art Director | creative-director |
-| Audio Director | creative-director |
-| Community Manager | publishing-director |
-| Creative Director | ceo |
-| DOTS/ECS Specialist | unity-specialist |
-| DevOps Engineer | technical-director |
-| Economy Designer | game-designer |
-| Engine Programmer | lead-programmer |
-| Finance Controller | ceo |
-| Gameplay Programmer | lead-programmer |
-| Lead Game Designer | creative-director |
-| Lead Programmer | technical-director |
-| Legal & Compliance Officer | ceo |
-| Level Designer | game-designer |
-| Live Operations Designer | publishing-director |
-| Localization Lead | producer |
-| Market Analyst | publishing-director |
-| Monetization Designer | publishing-director |
-| Narrative Director | creative-director |
-| Network Programmer | lead-programmer |
-| Organizational Improvement Lead | ceo |
-| Performance Analyst | technical-director |
-| Player Support Specialist | community-manager |
-| Producer | ceo |
-| Prototyper | producer |
-| Publishing Director | ceo |
-| QA Lead | technical-director |
-| QA Tester | qa-lead |
-| Release Manager | producer |
-| Security Engineer | technical-director |
-| Sound Designer | audio-director |
-| Studio Head & CEO | null |
-| Systems Designer | game-designer |
-| Technical Artist | art-director |
-| Technical Director | ceo |
-| Tools Programmer | lead-programmer |
-| UI Programmer | lead-programmer |
-| UX Designer | art-director |
-| Unity Addressables Specialist | unity-specialist |
-| Unity Engine Lead | lead-programmer |
-| Unity Shader/VFX Specialist | unity-specialist |
-| Unity UI Specialist | unity-specialist |
-| User Acquisition Manager | publishing-director |
-| World Builder | narrative-director |
-| Writer | narrative-director |
+| Agent | Reports To | Model Tier |
+|-------|------------|------------|
+| AI Programmer | lead-programmer | 2 |
+| Accessibility Specialist | producer | 2 |
+| Analytics Engineer | publishing-director | 2 |
+| App Store Optimization Specialist | publishing-director | 2 |
+| Art Director | creative-director | 2 |
+| Audio Director | creative-director | 2 |
+| Community Manager | publishing-director | 2 |
+| Creative Director | ceo | 1 |
+| DOTS/ECS Specialist | unity-specialist | 2 |
+| DevOps Engineer | technical-director | 2 |
+| Economy Designer | game-designer | 2 |
+| Engine Programmer | lead-programmer | 2 |
+| Finance Controller | ceo | 2 |
+| Gameplay Programmer | lead-programmer | 2 |
+| Lead Game Designer | creative-director | 2 |
+| Lead Programmer | technical-director | 2 |
+| Legal & Compliance Officer | ceo | 2 |
+| Level Designer | game-designer | 2 |
+| Live Operations Designer | publishing-director | 2 |
+| Localization Lead | producer | 2 |
+| Market Analyst | publishing-director | 2 |
+| Monetization Designer | publishing-director | 2 |
+| Narrative Director | creative-director | 2 |
+| Network Programmer | lead-programmer | 2 |
+| Organizational Improvement Lead | ceo | 1 |
+| Performance Analyst | technical-director | 2 |
+| Player Support Specialist | community-manager | 3 |
+| Producer | ceo | 1 |
+| Prototyper | producer | 2 |
+| Publishing Director | ceo | 1 |
+| QA Lead | technical-director | 2 |
+| QA Tester | qa-lead | 3 |
+| Release Manager | producer | 2 |
+| Security Engineer | technical-director | 2 |
+| Sound Designer | audio-director | 2 |
+| Studio Head & CEO | null | 1 |
+| Systems Designer | game-designer | 2 |
+| Technical Artist | art-director | 2 |
+| Technical Director | ceo | 1 |
+| Tools Programmer | lead-programmer | 2 |
+| UI Programmer | lead-programmer | 2 |
+| UX Designer | art-director | 2 |
+| Unity Addressables Specialist | unity-specialist | 2 |
+| Unity Engine Lead | lead-programmer | 2 |
+| Unity Shader/VFX Specialist | unity-specialist | 2 |
+| Unity UI Specialist | unity-specialist | 2 |
+| User Acquisition Manager | publishing-director | 2 |
+| World Builder | narrative-director | 2 |
+| Writer | narrative-director | 2 |
 
 ### Skills
 

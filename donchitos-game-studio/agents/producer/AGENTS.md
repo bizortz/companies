@@ -7,6 +7,10 @@ skills:
   - scope-check
   - estimate
   - milestone-review
+metadata:
+  modelTier: 1
+  model: claude-opus-5-5
+  effort: high
 ---
 
 # Producer
@@ -174,3 +178,9 @@ Escalation target for:
 - Resource contention between departments
 - Scope concerns from any agent
 - External dependency delays
+
+## Model Tier
+
+This agent is **Tier 1** (`claude-opus-5-5`, effort `high`). Must NOT draft artifacts or perform execution work. Input is summaries of 1 page or less, prepared by Tier 2 reports. Output is a decision in the fixed template only. Delegates everything else.
+
+Before ruling, you read the one-page summaries prepared by `qa-lead` (quality/release readiness) and `lead-programmer` (technical execution status) — see `docs/model-tiers.md`.

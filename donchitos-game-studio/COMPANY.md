@@ -1,6 +1,6 @@
 ---
 name: Donchitos Game Studio
-description: Autonomous Unity mobile game studio (iOS/Android) with AI agents spanning creative direction, engineering, design, art, audio, narrative, QA, production, and live operations
+description: Autonomous Unity mobile game studio (iOS/Android) with 49 AI agents spanning creative direction, engineering, design, art, audio, narrative, QA, production, and publishing & growth (UA, ASO, monetization, analytics, live ops, community, legal/compliance, finance) — operates without human approval gates except a fixed always-ask list, and self-improves against measured outcomes
 slug: donchitos-game-studio
 schema: agentcompanies/v1
 version: 1.0.0
@@ -12,6 +12,8 @@ goals:
   - Follow a 10-phase development process from ideation through post-launch and live operations
   - Maintain quality through systematic reviews, testing, and quality gates
   - Operate autonomously with human sign-off reserved for a fixed always-ask list
+  - Ship and grow mobile titles through a dedicated Publishing & Growth pillar (UA, ASO, monetization, market analysis, live ops, community)
+  - Self-improve on measured outcomes via an evidence-driven improvement loop, never on unverified opinion
 tags:
   - game-development
   - mobile-games
@@ -19,6 +21,10 @@ tags:
   - game-studio
   - unity
   - autonomous-agents
+  - mobile
+  - ios
+  - android
+  - autonomous
 ---
 
 Donchitos Game Studio is an autonomous, self-improving mobile game development company powered by specialized AI agents organized into a professional studio hierarchy. The studio replicates the structure and workflows of a real game development team — from Creative Director to QA Tester — enabling coordinated, quality-driven, autonomous game development for iOS and Android.
@@ -32,10 +38,37 @@ The studio operates through a **hybrid pipeline + hub-and-spoke workflow**:
 
 ### Organizational Tiers
 
-- **CEO** (Opus-tier): Studio Head aligns creative, technical, production, and publishing/growth pillars and makes portfolio greenlight/kill decisions against explicit thresholds in `ops/targets.yaml`. Finance Controller, Legal & Compliance Officer, and Org Improvement Lead also report directly to the CEO, kept independent of any single pillar — the CEO is at the studio's 7-direct-report cap with these three plus the four pillar directors.
-- **Directors** (Opus-tier): Creative Director, Technical Director, Producer, and Publishing Director set vision, architecture, schedule, and go-to-market/monetization strategy — all report to the CEO.
-- **Department Leads** (Sonnet-tier): Game Designer, Lead Programmer, Art Director, Audio Director, Narrative Director, QA Lead, Community Manager, and others translate direction into actionable work.
-- **Specialists** (Sonnet/Haiku-tier): 35+ specialists execute domain-specific tasks — from Gameplay Programmers to Sound Designers to Engine Specialists to User Acquisition Manager and ASO Specialist.
+Two independent tiering schemes apply here: reporting depth (who manages
+whom) and **model tier** (`docs/model-tiers.md` / `ops/model-tiers.yaml`,
+which model and effort level each agent runs at). They are related but not
+identical — model tier follows the *type* of work an agent does, not its
+depth in the reporting tree.
+
+- **Model Tier 1 — decides only** (`claude-opus-5-5`, effort high, 6 agents):
+  `ceo`, `creative-director`, `technical-director`, `producer`,
+  `publishing-director`, `org-improvement-lead`. These agents read one-page
+  summaries prepared by named Tier 2 reports and issue a verdict in a fixed
+  template — they never draft artifacts, code, or specs themselves.
+- **Model Tier 2 — owns execution** (`claude-sonnet-5`, effort low, 41
+  agents): every department lead and specialist not listed above or below —
+  design, engineering, art, audio, narrative, production, QA leadership, and
+  every publishing role (UA, ASO, monetization, market analysis, analytics,
+  community, live ops, legal/compliance, finance). Escalates only
+  cross-domain, irreversible, or always-ask-listed decisions to its Tier 1
+  manager.
+- **Model Tier 3 — high-volume, templated** (`claude-haiku-4-5-20251001`,
+  effort auto, 2 agents): `qa-tester`, `player-support`. Follows the skill
+  procedure and output template verbatim, escalating anything ambiguous.
+
+**Reporting structure:** the CEO sits at the top (reportsTo: null) with four
+pillar directors (Creative, Technical, Production, Publishing & Growth) plus
+three individual functions (Finance Controller, Legal & Compliance Officer,
+Org Improvement Lead) as direct reports — the CEO is at the studio's
+7-direct-report cap. Below the directors, department leads (Game Designer,
+Lead Programmer, Art Director, Audio Director, Narrative Director, QA Lead,
+Community Manager, Unity Specialist, and others) manage specialists who
+execute domain-specific work. See `docs/org-chart.mermaid` for the full
+49-agent tree with model tier coloring.
 
 ### Autonomous Operating Protocol
 

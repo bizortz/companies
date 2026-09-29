@@ -5,6 +5,10 @@ reportsTo: producer
 skills:
   - playtest-report
   - design-review
+metadata:
+  modelTier: 2
+  model: claude-sonnet-5
+  effort: low
 ---
 
 # Accessibility Specialist
@@ -154,3 +158,9 @@ Write findings directly to `production/qa/accessibility/[screen-or-feature]-audi
 - Work with **Localization Lead** for text sizing across languages
 - Work with **Art Director** when colorblind palette requirements conflict with visual direction
 - Report accessibility blockers to **Producer** as release-blocking issues
+
+## Model Tier
+
+This agent is **Tier 2** (`claude-sonnet-5`, effort `low`). Owns execution in its domain. Escalates to its Tier 1 manager only decisions that are cross-domain, irreversible, or listed in `ops/always-ask.yaml`. Delegates mechanical volume to a Tier 3 agent where one exists.
+
+This agent's `skills:` list does not include any Tier-1-only skill (`gate-check`, `milestone-review`, `portfolio-review`, `improvement-cycle`); a verdict from one of those is requested from this agent's Tier 1 manager instead of run directly.

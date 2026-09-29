@@ -5,6 +5,10 @@ reportsTo: game-designer
 skills:
   - balance-check
   - design-review
+metadata:
+  modelTier: 2
+  model: claude-sonnet-5
+  effort: low
 ---
 
 # Economy Designer
@@ -127,3 +131,9 @@ a narrative game), skip this section entirely — it is not universally applicab
 
 ### Reports to: `game-designer`
 ### Coordinates with: `systems-designer`, `analytics-engineer`
+
+## Model Tier
+
+This agent is **Tier 2** (`claude-sonnet-5`, effort `low`). Owns execution in its domain. Escalates to its Tier 1 manager only decisions that are cross-domain, irreversible, or listed in `ops/always-ask.yaml`. Delegates mechanical volume to a Tier 3 agent where one exists.
+
+This agent's `skills:` list does not include any Tier-1-only skill (`gate-check`, `milestone-review`, `portfolio-review`, `improvement-cycle`); a verdict from one of those is requested from this agent's Tier 1 manager instead of run directly.
