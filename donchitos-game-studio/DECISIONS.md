@@ -239,3 +239,34 @@ Deviations, if any come up while executing, will be appended below this line.
     disk. This is expected and is Phase 3's responsibility — see
     `PROGRESS.md`'s "What remains" section. A skill-existence validator run
     today will report exactly these eight as missing and nothing else.
+
+---
+
+# Phase 3 (Work Items 6-8)
+
+17. **Frontmatter convention for originally-authored (non-upstream) skills.**
+    All 53 pre-existing skills carry `metadata.sources` pointing at a specific
+    upstream file/commit (`kind: github-file`, `usage: adapted`), because
+    Phase 1 inlined them from `UPSTREAM_STUDIO`. The 12 new mobile skills
+    created in Work Item 6 (`market-scan`, `concept-validation`,
+    `device-perf-budget`, `monetization-setup`, `privacy-compliance`,
+    `store-submission`, `aso-update`, `soft-launch`, `ua-campaign`,
+    `kpi-review`, `portfolio-review`, `incident-response`) are original to
+    this package — no upstream file exists for them. Rather than omit
+    `metadata` (no precedent for that in this package) or fabricate a fake
+    upstream source, each carries `metadata.sources: [{kind: original, usage:
+    original, authored_for: donchitos-game-studio, phase: 3}]`, keeping the
+    same shape (`metadata.sources` list) so any existing tooling/validator
+    that reads `metadata.sources[].usage` continues to work, while being
+    honest that there is no upstream commit to cite.
+
+18. **Skill-existence validator confirms all 8 previously-flagged dangling
+    skill references are now resolved, and no others exist.** Ran a
+    programmatic check (`agents/*/AGENTS.md` `skills:` list vs. `ls skills/`)
+    after Work Item 6: 65 skills now on disk (53 + 12 new), zero dangling
+    references across all 48 agents. `gate-check`, `scope-check`, and
+    `milestone-review` already existed from the original package (per the
+    issue's own instruction to check first) and were left as-is — they only
+    reference `creative-director`, `technical-director`, and `producer`, all
+    of which still exist in the current 48-agent org, so no update was
+    needed for org consistency.
