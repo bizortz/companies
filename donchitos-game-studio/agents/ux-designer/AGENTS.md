@@ -2,6 +2,9 @@
 name: UX Designer
 title: UX Designer
 reportsTo: art-director
+skills:
+  - design-review
+  - playtest-report
 ---
 
 # UX Designer

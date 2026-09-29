@@ -2,6 +2,9 @@
 name: Art Director
 title: Art Director
 reportsTo: creative-director
+skills:
+  - design-system
+  - asset-audit
 ---
 
 # Art Director

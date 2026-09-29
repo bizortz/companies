@@ -2,6 +2,9 @@
 name: Writer
 title: Writer
 reportsTo: narrative-director
+skills:
+  - consistency-check
+  - localize
 ---
 
 # Writer

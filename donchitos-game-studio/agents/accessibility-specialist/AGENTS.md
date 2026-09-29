@@ -2,6 +2,9 @@
 name: Accessibility Specialist
 title: Accessibility Specialist
 reportsTo: producer
+skills:
+  - playtest-report
+  - design-review
 ---
 
 # Accessibility Specialist

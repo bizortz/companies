@@ -2,6 +2,9 @@
 name: Technical Artist
 title: Technical Artist
 reportsTo: art-director
+skills:
+  - asset-audit
+  - perf-profile
 ---
 
 # Technical Artist

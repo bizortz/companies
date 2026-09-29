@@ -2,6 +2,9 @@
 name: Security Engineer
 title: Security Engineer
 reportsTo: producer
+skills:
+  - security-audit
+  - code-review
 ---
 
 # Security Engineer

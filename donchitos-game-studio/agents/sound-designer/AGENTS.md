@@ -2,6 +2,9 @@
 name: Sound Designer
 title: Sound Designer
 reportsTo: audio-director
+skills:
+  - team-audio
+  - asset-audit
 ---
 
 # Sound Designer

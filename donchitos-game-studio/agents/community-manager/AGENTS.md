@@ -2,6 +2,9 @@
 name: Community Manager
 title: Community Manager
 reportsTo: producer
+skills:
+  - patch-notes
+  - retrospective
 ---
 
 # Community Manager

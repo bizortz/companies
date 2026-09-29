@@ -2,6 +2,9 @@
 name: Level Designer
 title: Level Designer
 reportsTo: game-designer
+skills:
+  - playtest-report
+  - map-systems
 ---
 
 # Level Designer

@@ -2,6 +2,9 @@
 name: Localization Lead
 title: Localization Lead
 reportsTo: producer
+skills:
+  - localize
+  - consistency-check
 ---
 
 # Localization Lead

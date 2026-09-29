@@ -2,6 +2,9 @@
 name: DevOps Engineer
 title: DevOps Engineer
 reportsTo: producer
+skills:
+  - smoke-check
+  - soak-test
 ---
 
 # DevOps Engineer

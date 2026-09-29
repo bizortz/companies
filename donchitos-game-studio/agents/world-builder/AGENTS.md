@@ -2,6 +2,9 @@
 name: World Builder
 title: World Builder
 reportsTo: narrative-director
+skills:
+  - map-systems
+  - consistency-check
 ---
 
 # World Builder

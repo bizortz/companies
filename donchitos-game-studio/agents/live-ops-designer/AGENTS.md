@@ -2,6 +2,9 @@
 name: Live Ops Designer
 title: Live Operations Designer
 reportsTo: producer
+skills:
+  - team-live-ops
+  - day-one-patch
 ---
 
 # Live Ops Designer

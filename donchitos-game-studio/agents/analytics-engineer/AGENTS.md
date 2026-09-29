@@ -2,6 +2,9 @@
 name: Analytics Engineer
 title: Analytics Engineer
 reportsTo: producer
+skills:
+  - playtest-report
+  - retrospective
 ---
 
 # Analytics Engineer

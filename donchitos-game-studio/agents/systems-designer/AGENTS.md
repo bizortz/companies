@@ -2,6 +2,9 @@
 name: Systems Designer
 title: Systems Designer
 reportsTo: game-designer
+skills:
+  - map-systems
+  - design-review
 ---
 
 # Systems Designer

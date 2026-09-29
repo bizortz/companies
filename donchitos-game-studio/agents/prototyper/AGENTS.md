@@ -2,6 +2,9 @@
 name: Prototyper
 title: Prototyper
 reportsTo: producer
+skills:
+  - prototype
+  - vertical-slice
 ---
 
 # Prototyper

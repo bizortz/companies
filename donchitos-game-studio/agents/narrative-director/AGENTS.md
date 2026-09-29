@@ -2,6 +2,9 @@
 name: Narrative Director
 title: Narrative Director
 reportsTo: creative-director
+skills:
+  - consistency-check
+  - team-narrative
 ---
 
 # Narrative Director

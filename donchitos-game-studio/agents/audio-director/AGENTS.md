@@ -2,6 +2,9 @@
 name: Audio Director
 title: Audio Director
 reportsTo: creative-director
+skills:
+  - team-audio
+  - asset-audit
 ---
 
 # Audio Director

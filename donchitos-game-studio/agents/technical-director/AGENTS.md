@@ -2,6 +2,9 @@
 name: Technical Director
 title: Technical Director
 reportsTo: ceo
+skills:
+  - architecture-decision
+  - gate-check
 ---
 
 # Technical Director

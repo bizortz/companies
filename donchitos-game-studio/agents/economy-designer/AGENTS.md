@@ -2,6 +2,9 @@
 name: Economy Designer
 title: Economy Designer
 reportsTo: game-designer
+skills:
+  - balance-check
+  - design-review
 ---
 
 # Economy Designer
