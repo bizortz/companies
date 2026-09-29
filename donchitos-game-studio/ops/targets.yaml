@@ -1,0 +1,56 @@
+# Portfolio greenlight/kill thresholds.
+#
+# The CEO reads these thresholds before any greenlight, conditional-greenlight,
+# or kill decision — it must never invent a number on the spot. Every field
+# below is seeded with a TODO placeholder because no live game or market data
+# exists yet. Setting real values is the CEO's first operating-cycle action:
+# it proposes initial thresholds informed by `market-scan` output and genre
+# comparables, sets them here, and logs the rationale as a decision-log entry
+# (see ops/decision-log.md) citing the sources used. Values are revisited at
+# every quarterly strategy review and after every KPI review that shows a
+# threshold is miscalibrated (too permissive lets a losing game keep burning
+# budget; too strict kills a game that would have recovered).
+#
+# Do not hardcode fabricated industry-benchmark numbers here or anywhere else
+# in the package — thresholds are set from this studio's own market-scan /
+# kpi-review output and comparable-title research performed at decision time,
+# not from a number remembered from training data.
+
+version: 1
+
+# Cost Per Install ceiling, in USD, above which UA spend on a title should be
+# paused or the creative/targeting revisited. Set per title once market-scan
+# data exists; a blended default is used until then.
+cpi_ceiling_usd: TODO
+
+# Minimum acceptable retention, expressed as a fraction of D0 installs still
+# active on the given day. Below floor = design/onboarding review triggered;
+# a sustained miss across two KPI reviews = kill-candidate.
+retention_floors:
+  d1: TODO
+  d7: TODO
+  d30: TODO
+
+# Minimum acceptable average revenue per daily active user (USD), blended
+# across IAP and ad revenue per the studio's f2p-hybrid business model.
+arpdau_usd_floor: TODO
+
+# Maximum acceptable days for cumulative revenue per cohort to repay that
+# cohort's fully-loaded UA cost (CPI plus creative/testing overhead).
+payback_days_ceiling: TODO
+
+# Maximum cumulative burn, as a fraction of the approved project budget,
+# allowed before the next milestone gate without an explicit CEO
+# conditional-greenlight or kill ruling.
+budget_burn_ceiling_pct: TODO
+
+# --- Ownership and process ---
+#
+# owner: ceo (sets and revises these; may delegate the underlying analysis to
+#   publishing-director / finance-controller / producer but the sign-off is
+#   the CEO's alone, consistent with the CEO's "must not delegate greenlight
+#   authority" rule)
+# set_on: TODO (date the CEO first sets real values, first operating cycle)
+# last_reviewed: TODO
+# decision_log_ref: TODO (id of the ops/decision-log.md entry recording the
+#   rationale for the current values)
