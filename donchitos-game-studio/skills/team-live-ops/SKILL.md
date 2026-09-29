@@ -19,14 +19,11 @@ Then stop immediately without spawning any subagents or reading any files.
 
 When this skill is invoked with a valid argument, orchestrate the live-ops team through a structured planning pipeline.
 
-**Decision Points:** At each phase transition, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present
-the user with the subagent's proposals as selectable options. Write the agent's
-full analysis in conversation, then capture the decision with concise labels.
-In `collaborative` mode, the user must approve before moving to the next phase.
-In `guided` mode the pipeline advances automatically unless a phase is BLOCKED;
-in `autonomous` mode it runs end to end, recording each phase outcome via
-`log_decision`. Decisions in `automation_always_ask` categories
-(`is_always_ask_category` helper) always prompt regardless of mode. See
+**Decision Points:** At each phase transition, the orchestrating agent reviews
+the subagent's proposals directly, records the decision with concise labels in
+`ops/decision-log.md`, and advances to the next phase — the pipeline runs end
+to end without pausing for approval. Only decisions matching
+`ops/always-ask.yaml` pause regardless of how far the pipeline has run. See
 `docs/automation-modes.md`.
 
 ## Phase 0: Resolve Config
@@ -47,7 +44,7 @@ defaults in `docs/config-resolution.md`.
 - **`individual`** (default): `live-ops-designer` + `economy-designer`. Other agents consulted via these two, not spawned separately.
 - **`small`**: + `analytics-engineer` + `community-manager` (the full pipeline as documented).
 - **`studio`**: + `writer` + `narrative-director` + per-season reviews.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Phase 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -96,7 +93,7 @@ Use the `Agent` tool to spawn each team member as a subagent:
 
 **End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Autonomous write.** This subagent writes the artifact directly, without asking for approval — this studio runs `autonomous` by default (see `docs/automation-modes.md`). The write is logged to `ops/decision-log.md` as part of the phase's decision record.
 
 Launch independent agents in parallel where the pipeline allows it (Phases 3 and 4 can run simultaneously).
 
@@ -158,27 +155,26 @@ Collect outputs from all phases and present a consolidated season plan:
 - Written content inventory (Phase 5)
 - Communication calendar (Phase 6)
 
-Present a summary to the user with:
+Record a summary (report to producer) with:
 - **Content scope**: what is being created
 - **Economy health check**: does the reward track feel fair and non-predatory?
 - **Analytics readiness**: are success criteria defined and instrumented?
 - **Ethics review**: check the Phase 3 economy design against `design/live-ops/ethics-policy.md`
   - If the file does not exist: flag "ETHICS REVIEW SKIPPED: `design/live-ops/ethics-policy.md` not found. Economy design was not reviewed against an ethics policy. Recommend creating one before production begins." Include this flag in the season design output document. Add to next steps: create `design/live-ops/ethics-policy.md`.
-  - If the file exists and a violation is found: flag "ETHICS FLAG: [element] in Phase 3 economy design violates [policy rule]. Approval is blocked until this is resolved." Do NOT issue a COMPLETE verdict or write output documents. Decide autonomously and record the decision in `ops/decision-log.md`; escalate to your manager only if it crosses your domain boundary or matches an entry in `ops/always-ask.yaml` (see `docs/automation-modes.md`). If user chooses to revise: re-spawn economy-designer to produce a corrected design, then return to Phase 7 review. If user selects Cancel: end with Verdict: BLOCKED — "Live ops design cancelled due to unresolved ethics violation. Resolve the flagged issues and re-run /team-live-ops."
+  - If the file exists and a violation is found: flag "ETHICS FLAG: [element] in Phase 3 economy design violates [policy rule]." Do NOT issue a COMPLETE verdict or write output documents. Re-spawn economy-designer to produce a corrected design that resolves the flag, then return to this Phase 7 review. If the same flag recurs after one revision cycle, end with Verdict: **BLOCKED** — "Live ops design blocked on an unresolved ethics violation. Escalating to producer." — and log the escalation to `ops/decision-log.md`.
 - **Open questions**: decisions still needed before production begins
 
-Ask the user to approve the season plan before delegating to production teams. Issue the COMPLETE verdict only after the user approves and no unresolved ethics violations remain. If an ethics violation is unresolved, end with Verdict: **BLOCKED**.
+Once the economy health check, analytics readiness, and ethics review all
+pass, the orchestrating agent approves the season plan directly and logs the
+approval to `ops/decision-log.md` before delegating to production teams. Issue
+the COMPLETE verdict only once no unresolved ethics violations remain.
 
 ## Output Documents
 
-All documents save to `design/live-ops/` — **but the orchestrator asks before
-writing them.** `design/` is NOT one of the three directories the bounded write
-exception covers (`production/`, `docs/`, `tests/`), so a sub-agent handed one of
-these paths must prompt. Do not widen the exception to silence that.
-Follow `team-level`'s pattern instead: sub-agents write their working artifacts
-under `production/`, where the exception does reach them; **you** compile the
-final documents and ask via an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) — "May I write the season plan to
-`design/live-ops/…`?" — writing them only on approval.
+All documents save to `design/live-ops/`. Follow `team-level`'s pattern:
+sub-agents write their working artifacts under `production/`; **you** (the
+orchestrator) compile the final documents and write them directly to
+`design/live-ops/...`, logging the write to `ops/decision-log.md`.
 
 Paths:
 - `seasons/S[N]_[name].md` — Season design document (from Phase 1-3)
@@ -207,7 +203,7 @@ All file writes (season design docs, analytics plans, communication calendars) a
 delegated to sub-agents spawned via `Agent`. Those writes follow the **bounded
 exception** documented above under "Why this does not violate the Collaboration
 Protocol" — the path is one you named, the artifact is new under `production/`,
-`docs/` or `tests/`, and the phase is gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent
+`docs/` or `tests/`, and the phase is gated by an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent
 does **not** prompt per write inside those bounds; outside them it must ask.
 This orchestrator does not write files directly.
 
@@ -222,7 +218,6 @@ Verdict: **COMPLETE** — season plan produced and handed off for production.
 - Run `/design-review` on the season design document for consistency validation.
 - Run `/sprint-plan` to schedule content creation work for the season.
 - Run `/team-release` when the season content is ready to deploy.
-
 
 ## Procedure
 

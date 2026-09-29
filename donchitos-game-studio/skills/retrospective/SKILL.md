@@ -16,7 +16,6 @@ metadata:
 *(Autonomous step: resolve the relevant configuration/state described below before proceeding — no interactive prompt is required; use current project files and `docs/config-resolution.md` as the source of defaults.)*
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Insufficient input — check this before producing any report
 
 **If the inputs this skill needs do not exist, the answer is "could not run" —
@@ -86,14 +85,10 @@ Read the sprint or milestone plan from the appropriate location:
 > "No sprint data found for [sprint/milestone]. Run `/sprint-status` to generate
 > sprint data first, or provide the sprint details manually."
 
-Then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present two options:
-
-- **[A] Provide data manually** — ask the user to paste or describe the sprint
-  tasks, dates, and outcomes; use that as the source of truth for the retrospective.
-- **[B] Stop** — abort the skill. Verdict: **BLOCKED** — no sprint data available.
-
-If the user chooses [A], collect the data and continue to Phase 3 using what they provide.
-If the user chooses [B], stop here.
+If no sprint data source is found, check for any other record of the sprint
+(commit history, story files, `ops/decision-log.md` entries from the sprint
+window) and reconstruct what can be reconstructed from those. If truly
+nothing is available, stop: Verdict: **BLOCKED** — no sprint data available.
 
 Extract: planned tasks, estimated effort, owners, and goals.
 
@@ -231,11 +226,11 @@ the single most important thing to change going forward?]
 
 Present the retrospective and top findings to the user (completion rate, velocity trend, top blocker, most important action item).
 
-Ask: "May I write this to `production/retrospectives/retro-sprint-[N]-[date].md`?" (or `production/retrospectives/retro-[milestone-name]-[date].md` for milestone retrospectives)
+Write directly to `production/retrospectives/retro-sprint-[N]-[date].md` and log the write to `ops/decision-log.md`. (or `production/retrospectives/retro-[milestone-name]-[date].md` for milestone retrospectives)
 
 If yes, write the file, creating the `production/retrospectives/` directory if needed. Verdict: **COMPLETE** — retrospective saved.
 
-If no, stop here. Verdict: **BLOCKED** — user declined write.
+If no, stop here. 
 
 ---
 
@@ -247,7 +242,7 @@ Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation
   - `[A] Yes — open sprint planning with retro action items and velocity delta pre-populated`
   - `[B] No — I'll reference the retrospective file manually when I'm ready`
 
-If the user selects [A]: Proceed to invoke `/sprint-plan new`, passing the retrospective file path and a summary of the action items and velocity change so the sprint planner can reference them.
+By default, proceed to invoke `/sprint-plan new`, passing the retrospective file path and a summary of the action items and velocity change so the sprint planner can reference them.
 
 - If this was a milestone retrospective, run `/gate-check` to formally assess readiness for the next phase.
 
@@ -260,11 +255,9 @@ If the user selects [A]: Proceed to invoke `/sprint-plan new`, passing the retro
 - Check whether previous action items were completed. Recurring unaddressed items are a process smell.
 - If this is a milestone retrospective, also evaluate whether the milestone goals were achieved and what that means for the overall project timeline.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

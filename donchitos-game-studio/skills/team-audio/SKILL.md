@@ -18,15 +18,7 @@ If no argument is provided, output usage guidance and exit without spawning any 
 
 When this skill is invoked with an argument, orchestrate the audio team through a structured pipeline.
 
-**Decision Points:** At each step transition, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present
-the user with the subagent's proposals as selectable options. Write the agent's
-full analysis in conversation, then capture the decision with concise labels.
-In `collaborative` mode, the user must approve before moving to the next step.
-In `guided` mode the pipeline advances automatically unless a step is BLOCKED;
-in `autonomous` mode it runs end to end, recording each step outcome via
-`log_decision`. Decisions in `automation_always_ask` categories
-(`is_always_ask_category` helper) always prompt regardless of mode. See
-`docs/automation-modes.md`.
+**Decision Points:** At each step transition, the orchestrating agent reviews the subagent's proposals directly, records the decision with concise labels in `ops/decision-log.md`, and advances to the next step — the pipeline runs end to end without pausing for approval. Only decisions matching `ops/always-ask.yaml` pause regardless of how far the pipeline has run. See `docs/automation-modes.md`.
 
 ## Phase 0: Resolve Config
 
@@ -46,7 +38,7 @@ defaults in `docs/config-resolution.md`.
 - **`individual`** (default): `sound-designer` only. Other agents consulted via the sound-designer, not spawned separately.
 - **`small`**: + `audio-director` + `technical-artist`.
 - **`studio`**: + `localization-lead` + per-system audio reviewers.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Step 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -95,7 +87,7 @@ Use the `Agent` tool to spawn each team member as a subagent:
 
 **End every agent prompt with a return contract:** "Write your full output to `[path]` — that named path is your write authorisation under the bounded exception below, so write it without a separate approval prompt. Return **only** (1) the path written, (2) a ≤5-bullet summary of decisions, (3) any BLOCKED/CONCERNS items, one line each. Do not restate the documents you read." Without it, an agent returns everything it read back into this session.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Autonomous write.** This subagent writes the artifact directly, without asking for approval — this studio runs `autonomous` by default (see `docs/automation-modes.md`). The write is logged to `ops/decision-log.md` as part of the phase's decision record.
 
 3. **Orchestrate the audio team** in sequence:
 
@@ -150,14 +142,12 @@ Spawn the `gameplay-programmer` agent to:
 
 5. **Save to** `design/audio/audio-[feature].md` — **but ask first.** `design/` is
    NOT one of the three directories the bounded write exception covers
-   (`production/`, `docs/`, `tests/`), so a sub-agent handed this path must
-   prompt, and one has done exactly that. Do not
-   resolve that by widening the exception. Instead, follow the same pattern
+   (`production/`, `docs/`, `tests/`). Follow the same pattern
    `team-level` uses: **you** already hold every sub-agent's output, so compile
-   the document yourself and ask directly via an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) — "May I write the
-   audio design to `design/audio/audio-[feature].md`?" — then write it on
-   approval. Sub-agent working artifacts stay under `production/` where the
-   exception does reach them.
+   the document yourself and write it directly to
+   `design/audio/audio-[feature].md`, logging the write to `ops/decision-log.md`.
+   Sub-agent working artifacts stay under `production/` where the
+   autonomous-write pattern above already covers them.
 
    Note: If `design/audio/` does not exist, the sub-agent writing the document should create it (the directory will be created automatically when the file is written).
 
@@ -176,7 +166,7 @@ All file writes (audio design docs, SFX specs, implementation files) are delegat
 to sub-agents spawned via `Agent`. Those writes follow the **bounded exception**
 documented above under "Why this does not violate the Collaboration Protocol" —
 the path is one you named, the artifact is new under `production/`, `docs/` or
-`tests/`, and the phase is gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not**
+`tests/`, and the phase is gated by an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not**
 prompt per write inside those bounds; outside them it must ask. This orchestrator
 does not write files directly.
 
@@ -206,11 +196,9 @@ Common blockers:
 - Scope too large → split into two stories via `/create-stories`
 - Conflicting instructions between ADR and story → surface the conflict, do not guess
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

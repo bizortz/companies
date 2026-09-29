@@ -22,7 +22,6 @@ Resolved above — use as-is. No block → defaults in
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
 `docs.density` explicitly to vary depth alone: `terse` = pillar bullets + concept bullets;
@@ -64,11 +63,10 @@ rather than restart.
    - **Who it's for / what they feel** and **Art & audio direction** — one line each
      (offer, don't force).
    Present the filled brief back in full for a single confirmation.
-3. **Write approval** — an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`): "Brief is ready. May I write it to
-   `design/game-brief.md`?" → `[A] Yes — write it` / `[B] Revise a field first`. On
-   [B], revise the named field, show before/after, re-ask; repeat until [A]. Then
-   write `design/game-brief.md` from the template, creating directories as needed.
-   Honor `modes.automation` for this write as elsewhere in the framework.
+3. **Write directly** — once the brief has been presented and self-reviewed for
+   completeness, write `design/game-brief.md` from the template directly,
+   creating directories as needed, and log the write to `ops/decision-log.md`.
+   Do not wait to be asked.
 4. **Next steps** (short — this is the point). **Read `engine.name` from
    `project.yaml` first and list `/setup-engine` only if it is absent or empty:**
    1. *(only when `engine.name` is absent or empty)* "`/setup-engine` — configure
@@ -138,7 +136,7 @@ conversationally (not as a checklist):
 **Taste profile**:
 - What 3 games have you spent the most time with? What kept you coming back?
   *(Ask this as plain text — the user must be able to type specific game names freely.
-  Do NOT put this in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with preset options.)*
+  Do NOT put this in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with preset options.)*
 - Are there genres you love? Genres you avoid? Why?
 - Do you prefer games that challenge you, relax you, tell you stories,
   or let you express yourself? *(Decide autonomously and record the decision in `ops/decision-log.md`; escalate to your manager only if it crosses your domain boundary or matches an entry in `ops/always-ask.yaml` (see `docs/automation-modes.md`).)*
@@ -199,8 +197,9 @@ this site as exempt (it overrides the mode the same way
 **CRITICAL**: This MUST be a plain list call — no tabs, no form fields. Use exactly this structure:
 
 ```
-an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)(
-  prompt: "Which concept resonates with you? You can pick one, combine elements, or ask for fresh directions.",
+present_options(
+  prompt: "Which concept resonates most? Combine elements or generate fresh
+  directions if none land, and record the reasoning for the pick.",
   options: [
     "Concept 1 — [Title]",
     "Concept 2 — [Title]",
@@ -274,22 +273,16 @@ Then define **3+ anti-pillars** (what this game is NOT):
   be cool if..." features that don't serve the core vision
 - Frame as: "We will NOT do [thing] because it would compromise [pillar]"
 
-**Pillar confirmation**: After presenting the full pillar set, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-- Prompt: "Do these pillars feel right for your game?"
-- Options: `[A] Lock these in` / `[B] Rename or reframe one` / `[C] Swap a pillar out` / `[D] Something else`
+**Pillar confirmation**: After presenting the full pillar set, self-review
+against the game concept and any stated constraints:
+- "Do these pillars fit the game as scoped so far?"
+- If a pillar reads weak, rename/reframe or swap it, and note the alternatives
+  considered.
 
-If the user selects B, C, or D, make the revision, then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) again:
-- Prompt: "Pillars updated. Ready to lock these in?"
-- Options: `[A] Lock these in` / `[B] Revise another pillar` / `[C] Something else`
-
-**At `collaborative`** — repeat until the user selects [A] Lock these in.
-**At `guided`** — pillars are a major decision, so ask once; apply the chosen
-revision and lock them in without a second confirmation round.
-**At `autonomous`** — do not ask. Lock in the drafted pillars and record them via
-`log_decision` with the alternatives considered.
-
-> An `autonomous` run never issues the question, so "repeat until [A]" has no
-> exit condition (`automation-modes.md:56`).
+Lock in the drafted pillars once they hold up to that self-review, and log the
+decision (final pillars + alternatives considered) to `ops/decision-log.md`.
+Do not loop waiting for external confirmation — escalate to creative-director
+only if a pillar choice is genuinely contentious or hard to reverse later.
 
 **Review mode check** — apply before spawning CD-PILLARS and AD-CONCEPT-VISUAL:
 - `solo` → skip both. Note: "CD-PILLARS skipped — Solo mode. AD-CONCEPT-VISUAL skipped — Solo mode." Proceed to Phase 5.
@@ -393,21 +386,14 @@ Present the assessment to the user. If UNREALISTIC, offer to adjust the MVP defi
    This section is the seed of the art bible — it captures the "everything must
    move" decision before it can be forgotten between sessions.
 
-5. Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) for write approval:
-- Prompt: "Game concept is ready. May I write it to `design/gdd/game-concept.md`?"
-- Options: `[A] Yes — write it` / `[B] Not yet — revise a section first`
+5. Self-review the draft against the brainstorm conversation and the sufficiency
+   checks above: is every section (Elevator Pitch, Core Fantasy & Unique Hook,
+   Pillars, Core Loop, MVP Definition, Scope Tiers, Risks) actually filled in
+   with real content, not a placeholder? Revise any weak section directly.
 
-If [B]: ask which section to revise using an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with options: `Elevator Pitch` / `Core Fantasy & Unique Hook` / `Pillars` / `Core Loop` / `MVP Definition` / `Scope Tiers` / `Risks` / `Something else — I'll describe`
-
-After revising, show the updated section as a diff or clear before/after, then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) — "Ready to write the updated concept document?"
-Options: `[A] Yes — write it` / `[B] Revise another section`
-**At `collaborative`** — repeat until the user selects [A].
-**At `guided`** — ask once; apply the requested revision and write the document
-without a further confirmation round.
-**At `autonomous`** — do not ask; write the document and record the decision via
-`log_decision`.
-
-> Same exit-condition problem as the pillars loop above (`automation-modes.md:56`).
+Once the self-review passes, write the game concept document directly to
+`design/gdd/game-concept.md` and log the decision (draft summary + any
+revisions made) to `ops/decision-log.md`. Do not wait to be asked.
 
 If yes, generate the document using the template at `docs/templates/game-concept.md`, fill in ALL sections from the brainstorm conversation, and write the file, creating directories as needed.
 
@@ -464,11 +450,9 @@ After the game concept is written, follow the pre-production pipeline in order:
 6. `/architecture-review` — bootstrap TR registry and Requirements Traceability Matrix
 7. `/gate-check pre-production` — validate readiness before committing to production
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

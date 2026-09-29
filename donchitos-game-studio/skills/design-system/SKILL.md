@@ -25,7 +25,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
 `docs.density` explicitly to vary depth alone: `terse` = bullet points, 2–5 lines per section,
@@ -358,7 +357,7 @@ Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation
 
 ## 3. Create File Skeleton
 
-Once the user confirms, **immediately** create the GDD file with empty section
+Once the decision is logged to `ops/decision-log.md`, **immediately** create the GDD file with empty section
 headers. This ensures incremental writes have a target.
 
 **Scaffold only the sections required at the resolved tier** (§1): at
@@ -462,11 +461,8 @@ Use the template structure from `docs/templates/game-design-document.md`:
 > only by opening the template. If you add a section to one file, add it to the
 > other in the same commit.
 
-Ask: "May I create the skeleton file at `design/gdd/[system-name].md`?"
-
-If the user declines: Stop with the following message:
-> "Verdict: **BLOCKED** — skeleton creation declined. The design session cannot proceed without the skeleton file, as all subsequent phases use it as the base. Re-run `/design-system [system]` when ready to create the file."
-Do not proceed to Section A.
+Create the skeleton file directly at `design/gdd/[system-name].md` and log
+the creation to `ops/decision-log.md`.
 
 After writing, update `production/session-state/active.md`:
 - Use Glob to check if the file exists.
@@ -496,41 +492,30 @@ Walk through each required section in order. For **each section**, follow this c
 ### The Section Cycle
 
 ```
-Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Approval  ->  Write
+Context  ->  Questions  ->  Options  ->  Decision  ->  Draft  ->  Write  ->  Log
 ```
 
 1. **Context**: State what this section needs to contain, and surface any relevant
    decisions from dependency GDDs that constrain it.
 
-2. **Questions**: Ask clarifying questions specific to this section. Use
-   an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) for constrained questions, conversational text for open-ended
-   exploration.
+2. **Questions**: Reason explicitly through clarifying questions specific to
+   this section, resolving each from the concept doc, pillars, and dependency
+   GDDs rather than pausing to ask.
 
 3. **Options**: Where the section involves design choices (not just documentation),
-   present 2-4 approaches with pros/cons. Explain reasoning in conversation text,
-   then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to capture the decision.
+   consider 2-4 approaches with pros/cons in reasoning text, then pick one and
+   state why.
 
-4. **Decision**: User picks an approach or provides custom direction.
+4. **Decision**: Pick the strongest approach (or synthesize a custom direction),
+   logging the choice and alternatives considered to `ops/decision-log.md` if
+   it is a decision of consequence (affects other systems, hard to reverse).
 
-5. **Draft**: Write the section content in conversation text for review. Flag any
-   provisional assumptions about undesigned dependencies.
+5. **Draft**: Write the section content, flagging any provisional assumptions
+   about undesigned dependencies explicitly in the text.
 
-6. **Approval**: Per the resolved `modes.automation` mode
-   (`docs/automation-modes.md`):
-
-   **In `collaborative` mode**: Immediately after the draft — in the SAME
-   response — use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). **NEVER use plain text. NEVER skip
-   this step.**
-   - Prompt: "Approve the [Section Name] section?"
-   - Options: `[A] Approve — write it to file` / `[B] Make changes — describe what to fix` / `[C] Start over`
-
-   **The draft and the approval widget MUST appear together in one response.
-   If the draft appears without the widget, the user is left at a blank prompt
-   with no path forward — this is a protocol violation in collaborative mode.**
-
-   **In `guided` mode**: Write the section immediately after the draft with
-   a brief one-line summary of what was decided. Skip the per-section widget;
-   the multi-section authoring rule (no per-section confirmation) applies.
+6. **Write**: Write the section to file immediately once drafted — no approval
+   gate. Include a brief one-line summary of what was decided in the session
+   log / decision log.
 
    **In `autonomous` mode**: Write the section directly and call
    `log_decision` with `Decision point: Approve [Section Name] section`,
@@ -740,7 +725,7 @@ table. A formula without defined variables cannot be implemented without guesswo
 - **Always spawn `systems-designer`**: provide Core Rules from Section C, tuning goals from user, balance context from dependency GDDs. Ask them to propose formulas with variable tables and output ranges.
 - **For economy/cost systems, also spawn `economy-designer`**: provide placement costs, upgrade cost intent, and progression goals. Ask them to validate cost curves and ratios.
 - Present the specialists' proposals to the user for review via an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)
-- The user decides; the main session writes to file
+- The owning agent decides; the main session writes to file
 - **Do NOT invent formula values or balance numbers without specialist input.** A user without balance design expertise cannot evaluate raw numbers — they need the specialists' reasoning.
 
 **Cross-reference**: If a dependency GDD defines a formula whose output feeds into
@@ -773,7 +758,7 @@ design question, not a specification.
 - `lean` → skip unless this is a section with HIGH implementation risk (Sections D and H only). For other sections, draft without the agent.
 - `full` → spawn as described below.
 
-**Agent delegation (MANDATORY)**: Spawn `systems-designer` via `Agent` before finalising edge cases. Provide: the completed Sections C and D, and ask them to identify edge cases from the formula and rule space that the main session may have missed. For narrative systems, also spawn `narrative-director`. Present their findings and ask the user which to include.
+**Agent delegation (MANDATORY)**: Spawn `systems-designer` via `Agent` before finalising edge cases. Provide: the completed Sections C and D, and ask them to identify edge cases from the formula and rule space that the main session may have missed. For narrative systems, also spawn `narrative-director`. Present their findings and If not already specified in project files, decide autonomously (using the most reasonable default given current project state) which to include, and record the assumption in `ops/decision-log.md`.
 
 **Cross-reference**: Check edge cases against dependency GDDs. If a dependency
 defines a floor, cap, or resolution rule that this system could violate, flag it.
@@ -1050,10 +1035,9 @@ step never carried the same guard. At `standard` and below the file is often
 absent, and a grep against a missing path returns nothing, which is
 indistinguishable from "no candidate is registered yet":
 
-- **Absent** — say so, and ask whether to create it:
-  *"`design/registry/entities.yaml` does not exist. May I create it with these
-  [N] entries?"* If the user declines, skip 5b and say the registry was not
-  written — do not treat the skip as a clean pass.
+- **Absent** — create `design/registry/entities.yaml` directly with these [N]
+  entries, log the creation to `ops/decision-log.md`, and say so:
+  *"`design/registry/entities.yaml` did not exist — created it with [N] entries."*
 - **Present but empty** — every list is `[]`, or the only matches are inside
   comment blocks. Treat it as present, register the candidates, but say which
   state you found: *"registry exists and is empty — all [N] entries are new."*
@@ -1081,12 +1065,13 @@ Registry candidates from this GDD:
     - [constant_name] [constant]: value=[N] ← matches registry ✅
 ```
 
-Ask: "May I update `design/registry/entities.yaml` with these [N] new entries
-and update `referenced_by` for the existing entries?" (If the file was absent
-and the user approved creating it, the wording is *create*, not *update*, and
-there are no `referenced_by` arrays to merge.)
+Update `design/registry/entities.yaml` directly with these [N] new entries
+and updated `referenced_by` arrays for the existing entries, and log the
+update to `ops/decision-log.md`. (If the file was absent and was just
+created, the wording is *create*, not *update*, and there are no
+`referenced_by` arrays to merge.)
 
-If yes: append new entries and update `referenced_by` arrays. Never modify
+Append new entries and update `referenced_by` arrays. Never modify
 existing `value` / attribute fields without surfacing it as a conflict first.
 
 ### 5c: Offer Design Review
@@ -1206,7 +1191,7 @@ If two rows fit, spawn the union of their Primary agents and say why.
   section being worked on, and what question needs expert input
 - The agent returns analysis/proposals to the main session
 - The main session presents the agent's output to the user via an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)
-- The user decides; the main session writes to file
+- The owning agent decides; the main session writes to file
 - Agents do NOT write to files directly — the main session owns all file writes
 
 ---
@@ -1226,35 +1211,36 @@ disruption.
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-**In `collaborative` mode (the default).** For `guided` and `autonomous`
-modes, see the per-mode rules in `docs/automation-modes.md` — the
-"Never" lines below describe what collaborative mode requires, not what
-applies universally.
+This studio runs `autonomous` by default (see `docs/automation-modes.md`).
+This skill follows the autonomous design principle at every step:
 
-This skill follows the collaborative design principle at every step:
-
-1. **Question -> Options -> Decision -> Draft -> Approval** for every section
-2. **an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)** at every decision point (Explain -> Capture pattern):
-   - Phase 2: "Ready to start, or need more context?"
-   - Phase 3: "May I create the skeleton?"
-   - Phase 4 (each section): Design questions, approach options, draft approval
-   - Phase 5: "May I update the entity registry? May I update the systems
-     index? What's next?" — **not** "Run design review?": §5c forbids offering
-     `/design-review` inline, because the reviewing agent must not inherit this
-     session's design history. Phase 5c presents the hand-off; it never asks.
-3. **"May I write to [filepath]?"** before the skeleton and before each section write
-4. **Incremental writing**: Each section is written to file immediately after approval
+1. **Explain -> Decide -> Draft -> Write -> Log** for every section — no human
+   approval gate.
+2. Decide directly at every point that would previously have been a question,
+   logging the reasoning to `ops/decision-log.md` when it materially shapes
+   the document:
+   - Phase 2: whether more context is needed before starting
+   - Phase 3: create the skeleton directly
+   - Phase 4 (each section): design questions, approach chosen, draft finalized
+   - Phase 5: update the entity registry and systems index directly — **not**
+     "run design review inline": Section 5c forbids offering `/design-review`
+     inline, because the reviewing agent must not inherit this session's
+     design history. Phase 5c presents the hand-off; it does not ask.
+3. **Write directly and log the write to `ops/decision-log.md`** for the skeleton and every section write.
+4. **Incremental writing**: Each section is written to file immediately once drafted
 5. **Session state updates**: After every section write
 6. **Cross-referencing**: Every section checks existing GDDs for conflicts
-7. **Specialist routing**: Complex sections get expert agent input, presented to
-   the user for decision — never written silently
+7. **Specialist routing**: Complex sections get expert agent input, and the
+   routing agent decides directly based on that input — never written silently
+   without considering it
 
-**Never** auto-generate the full GDD and present it as a fait accompli.
-**Never** write a section without user approval.
-**Never** contradict an existing approved GDD without flagging the conflict.
-**Always** show where decisions come from (dependency GDDs, pillars, user choices).
+**Never** auto-generate the full GDD without self-reviewing each section against
+the brief and pillars first.
+**Never** write a section without having reasoned through it (no filler content).
+**Never** contradict an existing approved GDD without flagging and resolving the conflict.
+**Always** show where decisions come from (dependency GDDs, pillars, prior design choices).
 
 ## Context Window Awareness
 
@@ -1275,11 +1261,9 @@ shows context at or above 70%. If so, append this notice to the response:
 - Run `/map-systems next` to move to the next highest-priority undesigned system
 - Run `/gate-check pre-production` when all MVP GDDs are authored and reviewed
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

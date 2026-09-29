@@ -113,7 +113,7 @@ Spawn `release-manager` via `Agent`. Ask them to produce a rollback plan coverin
 - Who is responsible for triggering the rollback
 - What player communication is required if a rollback occurs
 
-Present the rollback plan. Ask: "May I write this rollback plan to `production/releases/rollback-plan-[version].md`?"
+Present the rollback plan. Write directly to `production/releases/rollback-plan-[version].md` and log the write to `ops/decision-log.md`.
 
 Do not proceed to Phase 4 until the rollback plan is written.
 
@@ -225,7 +225,7 @@ See: `production/releases/rollback-plan-[version].md`
 [list player-facing changes in plain language]
 ```
 
-Ask: "May I write this patch record to `production/releases/day-one-patch-[version].md`?"
+Write directly to `production/releases/day-one-patch-[version].md` and log the write to `ops/decision-log.md`.
 
 ---
 
@@ -257,11 +257,9 @@ Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation
 - **Deferred is not forgotten** — every deferred bug gets a 1.1 ticket automatically
 - **Player communication is part of the patch** — `/patch-notes` is a required output, not optional
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

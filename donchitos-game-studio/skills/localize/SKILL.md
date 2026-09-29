@@ -40,7 +40,6 @@ If no subcommand is provided, output usage and stop. Verdict: **FAIL** — missi
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Phase 2A: Scan Mode
 
 Search the **code root** (resolve per `docs/code-root-resolution.md`) for hardcoded user-facing strings. **If the code root is unresolved, report `NOT ASSESSED — code root unresolved` rather than zero hits.** Zero hits from an unresolved root reads as "nothing to localize", which is the failure this guards:
@@ -78,7 +77,7 @@ Report all findings with file paths and line numbers. This mode is read-only —
 
 Output a diff of new strings to add to the string table.
 
-Present the diff to the user. Ask: "May I write these new entries to `assets/data/strings/strings-en.json`?"
+Present the diff to the user. Write directly to `assets/data/strings/strings-en.json` and log the write to `ops/decision-log.md`.
 
 If yes, write only the diff (new entries), not a full replacement. Verdict: **COMPLETE** — strings extracted and written.
 
@@ -191,7 +190,7 @@ Direct questions to: [placeholder for user/team contact]
 Delivery format: JSON, same schema as strings-en.json
 ```
 
-Ask: "May I write this translator brief to `production/localization/translator-brief-[locale]-[date].md`?"
+Write directly to `production/localization/translator-brief-[locale]-[date].md` and log the write to `ops/decision-log.md`.
 
 ---
 
@@ -234,7 +233,7 @@ Present findings as a table:
 
 BLOCKING = must fix before shipping that locale. ADVISORY = recommend change. NOTE = informational only.
 
-Ask: "May I write this cultural review report to `production/localization/cultural-review-[date].md`?"
+Write directly to `production/localization/cultural-review-[date].md` and log the write to `ops/decision-log.md`.
 
 ---
 
@@ -274,7 +273,7 @@ Generate a recording script document for each character, grouped by scene. Inclu
 - Emotion/direction note for each line (`[Warm, welcoming]`, `[Annoyed, clipped]`)
 - Any lines that are responses in a conversation (provide context: "Player just said X")
 
-Ask: "May I write the VO recording scripts to `production/localization/vo-scripts-[locale]-[date].md`?"
+Write directly to `production/localization/vo-scripts-[locale]-[date].md` and log the write to `ops/decision-log.md`.
 
 ### VO Pipeline: Validate
 
@@ -321,7 +320,7 @@ Grep patterns to check:
 
 Report findings. Flag BLOCKING issues (content unreadable without fix) vs ADVISORY (cosmetic improvements).
 
-Ask: "May I write this RTL check report to `production/localization/rtl-check-[date].md`?"
+Write directly to `production/localization/rtl-check-[date].md` and log the write to `ops/decision-log.md`.
 
 ---
 
@@ -422,7 +421,7 @@ Output a QA verdict per locale:
 [ ] Producer approves shipping [Locale]
 ```
 
-Ask: "May I write this localization QA report to `production/localization/loc-qa-[locale]-[date].md`?"
+Write directly to `production/localization/loc-qa-[locale]-[date].md` and log the write to `ops/decision-log.md`.
 
 **Gate integration**: The Polish → Release gate requires a PASS or PASS WITH CONDITIONS verdict for every locale being shipped. A FAIL blocks release for that locale only — other locales may still proceed if their QA passes.
 
@@ -457,11 +456,9 @@ Ask: "May I write this localization QA report to `production/localization/loc-qa
 
 After `qa` returns PASS for all shipping locales, include the QA report path when running `/gate-check release`.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

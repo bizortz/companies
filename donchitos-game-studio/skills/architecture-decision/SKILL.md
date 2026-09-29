@@ -25,7 +25,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`team.size`**: which agents validate this ADR (orthogonal to review_mode/workflow).
 - **`individual`** (default): `technical-director` + `lead-programmer` + the engine-specialist.
 - **`small`**: + an engine sub-specialist where applicable.
@@ -58,7 +57,7 @@ Enter **retrofit mode**:
    - `## ADR Dependencies` — HIGH if missing: dependency ordering breaks
    - `## Engine Compatibility` — HIGH if missing: post-cutoff risk unknown
    - `## GDD Requirements Addressed` — MEDIUM if missing: traceability lost
-3. Present to the user:
+3. Present the retrofit plan (report to technical-director):
    ```
    ## Retrofit: [ADR title]
    File: [path]
@@ -74,12 +73,12 @@ Enter **retrofit mode**:
    ```
 4. Ask: "Shall I add the [N] missing sections? I will not modify any existing content."
 5. If yes:
-   - For **Status**: ask the user — "What is the current status of this decision?"
+   - For **Status**: Decide autonomously (log to `ops/decision-log.md`): — "What is the current status of this decision?"
      Options: "Proposed", "Accepted", "Deprecated", "Superseded by ADR-XXXX"
    - For **ADR Dependencies**: ask — "Does this decision depend on any other ADR?
      Does it enable or block any other ADR or epic?" Accept "None" for each field.
    - For **Engine Compatibility**: read the engine reference docs (same as Step 1 below)
-     and ask the user to confirm the domain. Then generate the table with verified data.
+     and If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to confirm the domain, and record the assumption in `ops/decision-log.md`. Then generate the table with verified data.
    - For **GDD Requirements Addressed**: ask — "Which GDD systems motivated this decision?
      What specific requirement in each GDD does this ADR address?"
    - Append each missing section to the ADR file using the Edit tool.
@@ -125,15 +124,20 @@ enter and never leave.
    > it is a deferral with a different label."
    This is the same dependency rule `/architecture-review` already flags; here it
    is enforced rather than reported.
-4. **Confirm with the user, always.** Per `CONTRACT.md`, acceptance authority is
-   **the user, or `technical-director` on the user's explicit confirmation — no
-   other agent, and never this skill on its own.** Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-   - Prompt: "Accept ADR-NNNN — [title]? This is what unblocks stories and epics
+4. **Acceptance authority is `technical-director`, always.** Per
+   `docs/director-gates.md`, only `technical-director` may move an ADR to
+   `Accepted` — no other agent, and never this skill acting on its own. This
+   skill presents the ADR to technical-director (spawn via `Agent` if not
+   already the caller) and technical-director decides:
+   - "Accept ADR-NNNN — [title]? This is what unblocks stories and epics
      that depend on it."
-   - Options: `[A] Yes — accept it` / `[B] Not yet — leave it Proposed`
-   **This prompt fires regardless of `modes.automation`, including `autonomous`.**
-   Acceptance is the decision the whole architecture pipeline gates on; it is not
-   a step to be inferred.
+   - Outcomes: accept it now, or leave it `Proposed` pending more information.
+   technical-director logs the acceptance decision, its rationale, and
+   reversibility to `ops/decision-log.md`; if it is a costly or irreversible
+   architectural commitment, technical-director confirms with the CEO first
+   per the escalation chain in `docs/automation-modes.md`.
+   Acceptance is the decision the whole architecture pipeline gates on; it is
+   not a step to be inferred or skipped.
 5. **Find the stories this will unblock, BEFORE the prompt in step 4.** Grep
    `production/epics/[epic-slug]/story-*.md` — the one place stories live — for
    files containing **both** `Status: Blocked` and this ADR's id.
@@ -144,7 +148,7 @@ enter and never leave.
    > never gets picked up. That pairing is what "blocked pending this
    ADR" means — a story blocked for an unrelated reason will not name it. Feed the
    count into step 4's prompt so it reads *"3 stories become Ready"* rather than a
-   generic claim: **the user is being asked to authorise an effect, and should be
+   generic claim: **technical-director is being asked to authorise an effect, and should be
    shown the effect.** If none match, say "no stories are waiting on this" — that
    is useful information, not an empty result to omit.
 6. On confirmation, `Edit` the `## Status` line to `Accepted`. Set the date in the
@@ -163,7 +167,8 @@ running Phase 0:
 > "What technical decision are you documenting? Please provide a short title
 > (e.g., `event-system-architecture`, `physics-engine-choice`)."
 
-Use the user's response as the title, then proceed to Step 1.
+Infer a short kebab-case title from the decision being documented (e.g.
+`event-system-architecture`, `physics-engine-choice`), then proceed to Step 1.
 
 ---
 
@@ -227,7 +232,7 @@ Run this before reading any existing ADR — the registry exists specifically so
 new ADR's author does not need to open prior ADRs to learn their binding facts
 (state ownership, interface contracts, forbidden patterns).
 
-Present any relevant stances to the user **before** the collaborative design
+Present any relevant stances to technical-director **before** design
 begins, as locked constraints:
 
 ```
@@ -249,7 +254,7 @@ Forbidden Patterns:
   → The proposed approach must not use these patterns.
 ```
 
-If the user's proposed decision would contradict any registered stance, surface
+If the proposed decision would contradict any registered stance, surface
 the conflict immediately:
 
 > "⚠️ Conflict: This ADR proposes [X], but ADR-[NNNN] established that [Y] is
@@ -311,7 +316,7 @@ a **confirm/adjust** prompt using an autonomous decision (logged to `ops/decisio
   while examining nothing. `UNKNOWN` must be resolved during the confirm/adjust
   prompt; it is a prompt state, never a value written to the file
 - **GDD linkage**: Extract which GDD systems the title directly relates to
-- **Status**: Always `Proposed` for new ADRs — never ask the user what the status is
+- **Status**: Always `Proposed` for new ADRs — never Decide autonomously (log to `ops/decision-log.md`): what the status is
 
 **Scope of assumptions tab**: Assumptions cover only: problem framing, alternative approaches, upstream dependencies, GDD linkage, and status. Schema design questions (e.g., "How should spawn timing work?", "Should data be inline or external?") are NOT assumptions — they are design decisions belonging to a separate step after the assumptions are confirmed. Do not include schema design questions in the assumptions an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) widget.
 
@@ -338,7 +343,7 @@ Status: Proposed
 [E] Something else needs changing first
 ```
 
-Do not generate the ADR until the user confirms assumptions or provides corrections.
+Self-review the assumptions above against the GDD and any existing ADRs before generating the ADR; revise them directly if they do not hold up, and log the final assumption set to `ops/decision-log.md`.
 
 **After engine specialist and TD reviews return** (Step 5.5/5.6), if unresolved
 decisions remain, present each one as a separate an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with the proposed
@@ -495,7 +500,7 @@ to implement it.]
      1. Confirm the proposed approach is idiomatic for the pinned engine version
      2. Flag any APIs or patterns that are deprecated or changed post-training-cutoff
      3. Identify engine-specific risks or gotchas not captured in the current ADR draft
-   - If the specialist identifies a **blocking issue** (wrong API, deprecated approach, engine version incompatibility): revise the Decision and Engine Compatibility sections accordingly, then confirm the changes with the user before proceeding
+   - If the specialist identifies a **blocking issue** (wrong API, deprecated approach, engine version incompatibility): revise the Decision and Engine Compatibility sections accordingly directly, log the revision to `ops/decision-log.md`, and proceed
    - If the specialist finds **minor notes** only: incorporate them into the ADR's Risks subsection
 
 **Review mode check** — apply before spawning TD-ADR:
@@ -548,7 +553,7 @@ If GDD sync issues were found:
   - [C] Not yet — I need to review further
 
 If no GDD sync issues:
-- "ADR draft is complete. May I write it?"
+- "ADR draft is complete. Writing directly and logging to `ops/decision-log.md`."
   - [A] Write ADR to `docs/architecture/adr-[NNNN]-[slug].md`
   - [B] Not yet — I need to review further
 
@@ -580,14 +585,10 @@ Registry candidates from this ADR:
 3. Append the new entry AFTER the last existing entry in that section — do not try to replace a `[]` placeholder that may no longer exist
 4. If the section has entries already, use the closing content of the last entry as the `old_string` anchor, and append the new entry after it
 
-**BLOCKING — do not write to `docs/registry/architecture.yaml` without explicit user approval.**
-
-Ask using an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-- "May I update `docs/registry/architecture.yaml` with these [N] new stances?"
-  - Options: "Yes — update the registry", "Not yet — I want to review the candidates", "Skip registry update"
-
-Only proceed if the user selects yes. If yes: append new entries. Never modify existing entries — if a stance is
-changing, set the old entry to `status: superseded_by: ADR-[NNNN]` and add the new entry.
+Update `docs/registry/architecture.yaml` directly with these [N] new stances, and log the
+update to `ops/decision-log.md`. Append new entries; never modify existing
+entries — if a stance is changing, set the old entry to
+`status: superseded_by: ADR-[NNNN]` and add the new entry.
 
 ---
 
@@ -626,7 +627,7 @@ authoring is how the deadlock stayed invisible: it defeated the guard at the
 moment the guard became relevant, so the pipeline appeared to flow while running
 on decisions nobody had accepted.
 
-Instead, tell the user what is now waiting on acceptance:
+Instead, record what is now waiting on acceptance (report to technical-director):
 
 > "ADR-NNNN is written and `Proposed`. [N] stories remain `Blocked` pending it.
 > Run `/architecture-decision accept ADR-NNNN` when the decision is settled —
@@ -636,11 +637,9 @@ List the blocked stories by path so the cost of leaving it Proposed is visible.
 (Acceptance has consequences enforced across many skills and an authority
 recorded in only a few, so the route between them must stay explicit.)
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

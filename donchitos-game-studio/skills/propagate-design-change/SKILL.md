@@ -261,7 +261,7 @@ Apply the verdict:
 
 ## 7. Resolution Workflow
 
-For each ADR marked "Needs Review" or "Likely Superseded", ask the user what to do:
+For each ADR marked "Needs Review" or "Likely Superseded", Decide autonomously (log to `ops/decision-log.md`): what to do:
 
 Ask for each ADR in turn:
 > "ADR-NNNN ([title]) — [status]. What would you like to do?"
@@ -295,7 +295,7 @@ Ask: "May I update the traceability index?"
 
 ## 9. Output Change Impact Document
 
-Ask: "May I write the change impact report to `docs/architecture/change-impact-[date]-[system-slug].md`?"
+Write directly to `docs/architecture/change-impact-[date]-[system-slug].md` and log the write to `ops/decision-log.md`.
 
 The document contains:
 - The change summary from step 3
@@ -303,8 +303,8 @@ The document contains:
 - Resolution decisions made in step 7
 - List of ADRs that need to be written or updated
 
-If user approved: Verdict: **COMPLETE** — change impact report saved.
-If user declined: Verdict: **BLOCKED** — user declined write.
+Verdict: **COMPLETE** — change impact report saved.
+Fallback, if the report could not be written for a technical reason: 
 
 ---
 
@@ -332,11 +332,9 @@ describe what collaborative mode requires, not universal behavior.
 4. **Ask before writing** — always confirm before modifying any file
 5. **Non-destructive** — never delete ADR content; only add "Superseded by" notes
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

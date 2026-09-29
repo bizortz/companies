@@ -16,7 +16,6 @@ metadata:
 *(Autonomous step: resolve the relevant configuration/state described below before proceeding — no interactive prompt is required; use current project files and `docs/config-resolution.md` as the source of defaults.)*
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Insufficient input — check this before producing any report
 
 **If the inputs this skill needs do not exist, the answer is "could not run" —
@@ -57,7 +56,7 @@ Determine the balance domain from `$ARGUMENTS[0]`:
 - **Loot** → rarity distribution, pity timers, inventory pressure
 - **File path given** → load that file directly and infer domain from content
 
-If no argument, ask the user which system to check.
+If no argument, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) which system to check, and record the assumption in `ops/decision-log.md`.
 
 ---
 
@@ -175,11 +174,9 @@ If [B]:
 If [C]:
 - Summarize open issues and end with: "Re-run `/balance-check` after fixes to verify."
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

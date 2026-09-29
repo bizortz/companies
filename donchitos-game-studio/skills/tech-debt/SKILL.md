@@ -16,7 +16,6 @@ metadata:
 *(Autonomous step: resolve the relevant configuration/state described below before proceeding — no interactive prompt is required; use current project files and `docs/config-resolution.md` as the source of defaults.)*
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Phase 1: Parse Subcommand
 
 Determine the mode from the argument:
@@ -69,17 +68,17 @@ including when it is large and the count is genuinely zero.
 
 Present the findings to the user.
 
-Ask: "May I write these findings to `docs/tech-debt-register.md`?"
+Write directly to `docs/tech-debt-register.md` and log the write to `ops/decision-log.md`.
 
 If yes, update the register (append new entries, do not overwrite existing ones). Verdict: **COMPLETE** — scan findings written to register.
 
-If no, stop here. Verdict: **BLOCKED** — user declined write.
+If no, stop here. 
 
 ---
 
 ## Phase 2B: Add Mode
 
-Ask the user for the description, affected files, and impact if left unfixed (plain text prompts).
+If not already specified in project files, decide autonomously (using the most reasonable default given current project state) for the description, affected files, and impact if left unfixed (plain text prompts), and record the assumption in `ops/decision-log.md`.
 
 Then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to collect the **category**:
 - Prompt: "What category does this tech debt belong to?"
@@ -105,7 +104,7 @@ Ask: "May I append this entry to `docs/tech-debt-register.md`?"
 
 If yes, append the entry. Verdict: **COMPLETE** — entry added to register.
 
-If no, stop here. Verdict: **BLOCKED** — user declined write.
+If no, stop here. 
 
 ---
 
@@ -119,11 +118,11 @@ Re-sort the register by priority score and recommend which items to include in t
 
 Present the re-prioritized register to the user.
 
-Ask: "May I write the re-prioritized register back to `docs/tech-debt-register.md`?"
+Write directly to `docs/tech-debt-register.md` and log the write to `ops/decision-log.md`.
 
 If yes, write the updated file. Verdict: **COMPLETE** — register re-prioritized and saved.
 
-If no, stop here. Verdict: **BLOCKED** — user declined write.
+If no, stop here. 
 
 ---
 
@@ -165,11 +164,9 @@ Total items: [N] | Estimated total effort: [T-shirt sizes summed]
 - "Scan" should run at least once per sprint to catch new debt
 - Items older than 3 sprints without action should either be fixed or consciously accepted with a documented reason
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

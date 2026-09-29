@@ -183,7 +183,7 @@ version-ahead pin from an accident.
 
 ### Language Selection (Godot only)
 
-If Godot was chosen, ask the user which language to use **before** showing the proposed Technology Stack:
+If Godot was chosen, Decide autonomously (log to `ops/decision-log.md`): which language to use **before** showing the proposed Technology Stack:
 
 > "Godot supports two primary languages:
 >
@@ -198,7 +198,7 @@ Record the choice. It determines the CLAUDE.md template, naming conventions, spe
 ---
 
 Read `CLAUDE.md` and show the user the proposed Technology Stack changes.
-Ask: "May I write these engine settings to `CLAUDE.md`?"
+Write directly to `CLAUDE.md` and log the write to `ops/decision-log.md`.
 
 Wait for confirmation before making any edits.
 
@@ -284,7 +284,7 @@ For **Primary Input**, use the dominant input for the game genre:
 - Action/RPG/platformer targeting console → Gamepad
 - Strategy/point-and-click/RTS → Keyboard/Mouse
 - Mobile game → Touch
-- Cross-platform → ask the user
+- Cross-platform → Decide autonomously (log to `ops/decision-log.md`):
 
 > **Genre may not exist yet — check before deriving from it.** At `minimal` the
 > design artifact is `design/game-brief.md`, and it is authored *after* this
@@ -302,7 +302,7 @@ For **Primary Input**, use the dominant input for the game genre:
 > Gamepad Support and Touch Support still come from the platform table above;
 > only Primary Input depends on genre.
 
-Present the derived values and ask the user to confirm or adjust before writing.
+Present the derived values and If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to confirm or adjust before writing, and record the assumption in `ops/decision-log.md`.
 
 Example filled section:
 ```markdown
@@ -389,7 +389,7 @@ Present the filled-in preferences to the user. For Godot, include the chosen lan
 
 For all other engines, present the defaults directly without referencing the appendix.
 
-Wait for approval before writing the file.
+Proceed to write immediately and log the decision to `ops/decision-log.md`.
 
 ---
 
@@ -692,7 +692,7 @@ finish, and without it the run also never returns.
 
 Show the user the full set of four blocks and ask:
 
-> "May I write the `engine`, `specialists`, `naming`, and `commands` blocks to `project.yaml`?"
+> "Writing directly to `project.yaml` and logging to `ops/decision-log.md`."
 
 Wait for confirmation, then apply based on the file's current state:
 
@@ -885,7 +885,7 @@ Create the full reference doc set by searching the web:
    - Deprecated APIs with replacements
    - New features and best practices
 
-Ask: "May I create the engine reference docs under `docs/engine-reference/<engine>/`?"
+Create the engine reference docs directly under `docs/engine-reference/<engine>/` and log the creation to `ops/decision-log.md`.
 
 Wait for confirmation before writing any files.
 
@@ -923,8 +923,8 @@ orphaned.
 say so and skip to Section 8 — the developer has a project and its settings are
 theirs.
 
-Show the proposed file, then ask: *"May I create `project.godot` at the repo
-root?"* On approval, write:
+Show the proposed file, then write `project.godot` directly at the repo
+root and log the creation to `ops/decision-log.md`:
 
 ```ini
 config_version=5
@@ -1004,9 +1004,8 @@ with `<engine>` the engine just configured. If it still points at a different
 engine, Section 4 did not complete — go back and finish it rather than patching
 the line here.
 
-> **Why this is a check and not a second write.** Repeating the edit here with
-> its own approval prompt would ask the user twice for one change, and the second
-> ask would be for work already done. Locate the line by its marker, never by the
+> **Why this is a check and not a second write.** Repeating the edit here would
+> duplicate work already logged once for this change. Locate the line by its marker, never by the
 > `## Engine Version Reference` heading — the marker exists precisely so the line
 > can still be found when the heading moves or is reworded.
 
@@ -1047,7 +1046,7 @@ CLAUDE.md. The judgement is yours and the user's.
 
 ## 9. Update Agent Instructions
 
-Ask: "May I add a Version Awareness section to the engine specialist agent files?" before making any edits.
+Add a Version Awareness section to the engine specialist agent files directly and log the edit to `ops/decision-log.md`.
 
 For the chosen engine's specialist agents, verify they have a
 "Version Awareness" section. If not, add one following the pattern in
@@ -1137,7 +1136,7 @@ found in the code root — upgrade may be low-risk."
 
 ### Step 4 — Confirm Before Updating
 
-Ask the user before making any changes:
+Decide autonomously (log to `ops/decision-log.md`): before making any changes:
 
 > "Pre-upgrade audit complete. Found [N] files using deprecated APIs.
 > Proceed with upgrading VERSION.md to [new-version]?
@@ -1258,11 +1257,9 @@ and use the subsection for the chosen language:
 
 **Load discipline.** On any engine other than Godot, **never load it** — nothing in Sections 4, 5 or 5.5 needs it, and reading it anyway spends the tokens the split exists to save. On Godot, read it once when you first reach Section 4 and keep using it for Sections 5 and 5.5; do not re-read it at each reference.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

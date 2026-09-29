@@ -44,7 +44,6 @@ appropriate design or architecture documentation. Use this when:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Resolved above — use as-is. No block → defaults in
 `docs/config-resolution.md`.
 
@@ -93,9 +92,15 @@ generated — see Phase 5. Semantics of each tier are in
 - Find technical feasibility insights
 - Document player fantasy / feel
 
-## Phase 3: Ask Clarifying Questions
+## Phase 3: Resolve Clarifying Questions Autonomously
 
-**DO NOT** just describe the code. **ASK** about intent:
+**DO NOT** just describe the code. Reason explicitly about intent — for each
+open question below, infer the most likely intent from the code's own
+evidence (naming, comments, git history, related systems), state the
+inference and its confidence, and log it as a decision in
+`ops/decision-log.md` if it materially shapes the generated document. Only
+the categories in `ops/always-ask.yaml` pause for a human; everything else
+gets a best-effort, explicitly-labeled inference:
 
 **Design questions**:
 - "I see a [resource] system that depletes during [activity]. Was this for:
@@ -264,26 +269,19 @@ SECTIONS MARKED AS INCOMPLETE:
 - "[System] interaction with [other-system]" (not fully implemented yet)
 - "[Variant or feature]" (only [subset] implemented so far)
 
-May I write this to [output path]?
+Writing directly to [output path] and logging the decision to `ops/decision-log.md`.
 ```
 
 Use the tier-correct output path in the prompt: `design/gdd/[system-name].md` for
 a `full`/`standard` GDD, or `design/[system-name]-brief.md` for a `minimal` brief.
 
-**At `collaborative`** — wait for approval; the user may request changes before
-writing. **At `guided`** — this is a *new* file, so `automation-modes.md:81`
-still has it asked ("May I write?" is asked for new files only); if the target
-already exists, present the diff and proceed without waiting for an explicit
-"yes". **At `autonomous`** — write and log the decision.
-
-> **Keep this line scoped to its mode.** The skill header defers every file
-> write to `automation-modes.md`, so an unconditional "wait for approval" here
-> collides with it at both `guided` and `autonomous`. Same class as
-> `/map-systems` Step 5b.
+Write the file directly (creating it if new, or applying the diff if the target
+already exists) and log the decision to `ops/decision-log.md` per
+`docs/automation-modes.md`. Do not wait for approval before writing.
 
 ## Phase 7: Write Document with Metadata
 
-When approved, write the file with special markers:
+Write the file directly with special markers:
 
 ```markdown
 ---
@@ -357,7 +355,7 @@ User: 1. [Resource] is for pacing, prevent [unwanted behavior]
 Agent: Perfect, that clarifies the vision. Let me draft the design doc.
        [Shows draft with clarified intent]
 
-       May I write this to design/gdd/[system-name].md?
+       Writing directly and logging to `ops/decision-log.md`. to design/gdd/[system-name].md?
 
 User: Yes, write it.
 
@@ -373,26 +371,24 @@ Agent: ✅ Written to design/gdd/[system-name].md
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-This skill follows the collaborative design principle:
+This skill follows this studio's autonomous documentation principle:
 
 1. **Analyze First**: Read code, understand implementation
-2. **Question Intent**: Ask about "why", not just "what"
-3. **Present Findings**: Show discoveries, highlight unclear areas
-4. **User Clarifies**: Separate intent from accidents
-5. **Draft Document**: Create doc based on reality + intent
-6. **Show Draft**: Display key sections, explain additions
-7. **Get Approval**: "May I write to [filepath]?" On approval: Verdict: **COMPLETE** — document generated. On decline: Verdict: **BLOCKED** — user declined write.
+2. **Question Intent**: Reason explicitly about "why", not just "what"
+3. **Present Findings**: Record discoveries, explicitly flag unclear areas and how they were resolved
+4. **Resolve Autonomously**: Separate intent from accidents using the best available evidence; log material inferences to `ops/decision-log.md`
+5. **Draft Document**: Create doc based on reality + inferred intent
+6. **Self-Review**: Re-read key sections for internal consistency before writing
+7. **Write directly** and log the write to `ops/decision-log.md`. On completion: Verdict: **COMPLETE** — document generated.
 8. **Flag Follow-Up**: Suggest related work, don't auto-execute
 
 **Never assume intent. Always ask before documenting "why".**
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

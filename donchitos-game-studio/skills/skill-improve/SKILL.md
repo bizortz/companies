@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 # Skill Improve
 
 Runs an improvement loop on a single skill:
@@ -109,7 +108,7 @@ Write a targeted fix for each failure and warning. Show the proposed changes
 as clearly marked before/after blocks. Only change what is failing — do not
 rewrite sections that are passing.
 
-Ask: "May I write this improved version to `skills/[name]/SKILL.md`?"
+Write directly to `skills/[name]/SKILL.md` and log the write to `ops/decision-log.md`.
 
 If the user says no, stop here.
 
@@ -155,11 +154,9 @@ If yes: run `git checkout -- skills/[name]/SKILL.md`
 - Run `/skill-improve [next-name]` to continue the loop on another skill.
 - Run `/skill-test audit` to see overall coverage progress.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

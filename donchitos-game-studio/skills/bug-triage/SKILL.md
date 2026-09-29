@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 # Bug Triage
 
 This skill processes the open bug backlog into a prioritised, sprint-assigned
@@ -240,7 +239,7 @@ After classifying all bugs, generate trend metrics:
 
 Present the report in conversation, then ask:
 
-"May I write this triage report to `production/qa/bug-triage-[date].md`?"
+"Writing directly to `production/qa/bug-triage-[date].md` and logging to `ops/decision-log.md`."
 
 Write only after approval.
 
@@ -251,26 +250,23 @@ After writing:
   affected stories in sprint tracking and running `/smoke-check` to re-gate."
 - If no P1 bugs exist: "No P1 bugs — build is in good shape for QA hand-off." Verdict: **COMPLETE** — triage report written.
 
-If user declined write: Verdict: **BLOCKED** — user declined write.
+If user declined write: 
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-- **Never close or mark bugs Won't Fix without user approval** — surface them
-  as P4 candidates and ask: "Are these acceptable as Won't Fix?"
+- **qa-lead decides Won't Fix closures directly** — surface P4 candidates, close the clear ones, and log the closures to `ops/decision-log.md`; escalate to producer only if closing one would cut previously-committed scope.
 - **Never auto-assign to a sprint at capacity** — flag overflow and let the
-  sprint owner decide what to pull
+  sprint owner (producer) decide what to pull
 - **Severity is objective; priority is a team decision** — present severity
   classifications as recommendations, not mandates
 - **Trend data is informational** — do not block work on trend findings alone;
   surface them as observations
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

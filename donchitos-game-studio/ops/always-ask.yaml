@@ -1,0 +1,57 @@
+# The only human-in-the-loop gates in this studio.
+#
+# Every other decision is made autonomously by the owning agent (or escalated
+# up the management chain per docs/automation-modes.md and never to a human)
+# and recorded in ops/decision-log.md. These five categories are the sole
+# exceptions: they always pause for explicit human sign-off, regardless of
+# automation mode.
+#
+# Keep this file and docs/automation-modes.md's `automation_always_ask`
+# section in sync — they are the same list, in two forms.
+
+version: 1
+
+# Weekly real-money spend ceiling before a spend requires human sign-off.
+# Defaults to 0 (i.e. no autonomous real-money spend is pre-approved) until a
+# Finance/BizOps function (added in a later phase) sets this explicitly.
+spend_limit_usd: 0
+
+always_ask:
+  - id: real_money_spend
+    description: >
+      Spending real money above spend_limit_usd in a rolling 7-day window
+      (ad spend, UA spend, paid tools/services, contractor payouts, store
+      fees paid directly rather than deducted by the platform, etc.).
+    applies_to: [analytics-engineer, live-ops-designer, producer, ceo]
+
+  - id: first_release_or_price_change
+    description: >
+      The first public release of a game (App Store / Google Play listing
+      going live for the first time), or any change to a price, subscription
+      tier, or IAP/ad-monetization pricing structure for a released game.
+    applies_to: [release-manager, producer, economy-designer, ceo]
+
+  - id: legal_terms_or_contracts
+    description: >
+      Accepting Terms of Service, EULAs, contracts, or any legally binding
+      agreement with a third party (platform, vendor, contractor, publisher).
+    applies_to: [ceo, producer]
+
+  - id: personal_data_outside_policy
+    description: >
+      Collecting, storing, processing, or sharing personal data (PII) in any
+      way not already covered by the studio's written privacy/data policy —
+      including new analytics events, new third-party SDKs that touch user
+      data, or any change to data retention/sharing.
+    applies_to: [analytics-engineer, security-engineer, live-ops-designer, ceo]
+
+  - id: delete_production_data
+    description: >
+      Deleting production data — live player data, analytics warehouses,
+      backups, or any data store that cannot be trivially regenerated.
+    applies_to: [devops-engineer, security-engineer, analytics-engineer, ceo]
+
+# How this is enforced: any skill or agent whose action matches one of the
+# categories above must stop and request explicit human approval before
+# proceeding, and must log both the request and the human's decision to
+# ops/decision-log.md. No other category of decision requires this.

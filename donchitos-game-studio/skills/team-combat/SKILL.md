@@ -19,15 +19,7 @@ Then stop immediately without spawning any subagents or reading any files.
 
 When this skill is invoked with a valid argument, orchestrate the combat team through a structured pipeline.
 
-**Decision Points:** At each phase transition, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present
-the user with the subagent's proposals as selectable options. Write the agent's
-full analysis in conversation, then capture the decision with concise labels.
-In `collaborative` mode, the user must approve before moving to the next phase.
-In `guided` mode the pipeline advances automatically unless a phase is BLOCKED;
-in `autonomous` mode it runs end to end, recording each phase outcome via
-`log_decision`. Decisions in `automation_always_ask` categories
-(`is_always_ask_category` helper) always prompt regardless of mode. See
-`docs/automation-modes.md`.
+**Decision Points:** At each phase transition, the orchestrating agent reviews the subagent's proposals directly, records the decision with concise labels in `ops/decision-log.md`, and advances to the next phase — the pipeline runs end to end without pausing for approval. Only decisions matching `ops/always-ask.yaml` pause regardless of how far the pipeline has run. See `docs/automation-modes.md`.
 
 ## Phase 0: Resolve Config
 
@@ -47,7 +39,7 @@ defaults in `docs/config-resolution.md`.
 - **`individual`** (default): `gameplay-programmer` runs the pipeline; escalate `ai-programmer` only if the feature flags AI work. Other Team Composition agents are consulted via the gameplay-programmer, not spawned separately.
 - **`small`**: the full Team Composition pipeline below, as documented.
 - **`studio`**: full pipeline + engine sub-specialists + an adversarial review pass.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Phase 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -121,7 +113,7 @@ Phase 6 is a spoken status report, not an artifact — no path, and none needed.
 > reporting, so the sketch is understood as a record rather than an input to a
 > later gate.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Autonomous write.** This subagent writes the artifact directly, without asking for approval — this studio runs `autonomous` by default (see `docs/automation-modes.md`). The write is logged to `ops/decision-log.md` as part of the phase's decision record.
 
 Launch independent agents in parallel where the pipeline allows it (e.g., Phase 3 agents can run simultaneously).
 
@@ -145,18 +137,12 @@ Then spawn the **primary engine specialist** to validate the proposed architectu
 - Any proposed APIs that are deprecated or changed in the pinned engine version?
 - Output: engine architecture notes — incorporate into the architecture before Phase 3 begins
 
-Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-- Prompt: "Architecture sketch complete. Approve to proceed with parallel implementation."
-- Options:
-  - `[A] Proceed — spawn implementation agents (gameplay-programmer, ai-programmer, technical-artist, sound-designer)`
-  - `[B] Revise the architecture first — I'll describe what needs to change`
-  - `[C] Stop here — I'll continue later`
-
-Only spawn implementation agents if user selects [A]. (In `guided`/`autonomous`
-mode this architecture gate is a normal phase transition — proceed to
-implementation unless the architecture sketch came back BLOCKED, recording the
-decision via `log_decision` in autonomous mode. The gate is not a release-
-critical or irreversible decision, so it follows the standard pipeline rule.)
+Review the architecture sketch directly: proceed to spawn implementation
+agents (gameplay-programmer, ai-programmer, technical-artist, sound-designer)
+unless the sketch came back BLOCKED, in which case revise it first. Log the
+decision via `ops/decision-log.md`. This gate is not release-critical or
+irreversible, so it follows the standard autonomous pipeline rule — no human
+approval required.
 
 ### Phase 3: Implementation (parallel where possible)
 Delegate in parallel:
@@ -208,7 +194,7 @@ All file writes (design documents, implementation files, test cases) are
 delegated to sub-agents spawned via `Agent`. Those writes follow the **bounded
 exception** documented above under "Why this does not violate the Collaboration
 Protocol" — the path is one you named, the artifact is new under `production/`,
-`docs/` or `tests/`, and the phase is gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent
+`docs/` or `tests/`, and the phase is gated by an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent
 does **not** prompt per write inside those bounds; outside them it must ask.
 This orchestrator does not write files directly.
 
@@ -224,7 +210,6 @@ Verdict: **BLOCKED** — one or more phases could not complete; partial report p
 - Run `/code-review` on the implemented combat code before closing stories.
 - Run `/balance-check` to validate combat formulas and tuning values.
 - Run `/team-polish` if VFX, audio, or performance polish is needed.
-
 
 ## Procedure
 

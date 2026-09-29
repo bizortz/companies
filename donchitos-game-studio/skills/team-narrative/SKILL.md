@@ -18,15 +18,7 @@ If no argument is provided, output usage guidance and exit without spawning any 
 
 When this skill is invoked with an argument, orchestrate the narrative team through a structured pipeline.
 
-**Decision Points:** At each phase transition, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present
-the user with the subagent's proposals as selectable options. Write the agent's
-full analysis in conversation, then capture the decision with concise labels.
-In `collaborative` mode, the user must approve before moving to the next phase.
-In `guided` mode the pipeline advances automatically unless a phase is BLOCKED;
-in `autonomous` mode it runs end to end, recording each phase outcome via
-`log_decision`. Decisions in `automation_always_ask` categories
-(`is_always_ask_category` helper) always prompt regardless of mode. See
-`docs/automation-modes.md`.
+**Decision Points:** At each phase transition, the orchestrating agent reviews the subagent's proposals directly, records the decision with concise labels in `ops/decision-log.md`, and advances to the next phase — the pipeline runs end to end without pausing for approval. Only decisions matching `ops/always-ask.yaml` pause regardless of how far the pipeline has run. See `docs/automation-modes.md`.
 
 ## Phase 0: Resolve Config
 
@@ -46,7 +38,7 @@ defaults in `docs/config-resolution.md`.
 - **`individual`** (default): `writer` only; `narrative-director` invoked only on an explicit pillar conflict. Other agents consulted via the writer, not spawned separately.
 - **`small`**: `narrative-director` + `writer` + (per review_mode) `localization-lead`, `world-builder`.
 - **`studio`**: all narrative agents active + per-system writer reviews.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Phase 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -115,7 +107,7 @@ Use the `Agent` tool to spawn each team member as a subagent:
 > run to invent one, which defeats it. `/team-qa` Phase 4 carries the same
 > requirement for the same reason.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Autonomous write.** This subagent writes the artifact directly, without asking for approval — this studio runs `autonomous` by default (see `docs/automation-modes.md`). The write is logged to `ops/decision-log.md` as part of the phase's decision record.
 
 Launch independent agents in parallel where the pipeline allows it (e.g., Phase 2 agents can run simultaneously).
 
@@ -187,7 +179,7 @@ All file writes (narrative docs, dialogue files, lore entries) are delegated to
 sub-agents spawned via `Agent`. Those writes follow the **bounded exception**
 documented above under "Why this does not violate the Collaboration Protocol" —
 the path is one you named, the artifact is new under `production/`, `docs/` or
-`tests/`, and the phase is gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not**
+`tests/`, and the phase is gated by an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not**
 prompt per write inside those bounds; outside them it must ask. This orchestrator
 does not write files directly.
 
@@ -206,7 +198,6 @@ Verdict: **BLOCKED** — [reason]
 - Run `/design-review` on the narrative documents for consistency validation.
 - Run `/localize extract` to extract new strings for translation after dialogue is finalized.
 - Run `/dev-story` to implement dialogue triggers and narrative events in-engine.
-
 
 ## Procedure
 

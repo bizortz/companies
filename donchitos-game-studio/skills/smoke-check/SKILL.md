@@ -30,7 +30,6 @@ Handing a broken build to QA wastes their time and demoralises the team.
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`qa.level`**: at `minimal`, smoke-check is **optional** — if
 run, a FAIL is advisory and never blocks hand-off; at `standard`, it is required
 before a phase transition; at `full`, before every commit. This sits in front of
@@ -267,7 +266,7 @@ options:
   - "Crash or hang observed during basic navigation"
 ```
 
-For any selected item, ask the user to briefly describe what failed before generating the report.
+For any selected item, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to briefly describe what failed before generating the report, and record the assumption in `ops/decision-log.md`.
 
 **Batch 2 — Sprint changes and regression (always run):**
 ```
@@ -280,7 +279,7 @@ options:
   - "Other unexpected breakage observed — FAILED"
 ```
 
-For any selected item, ask the user to briefly describe what broke before generating the report.
+For any selected item, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to briefly describe what broke before generating the report, and record the assumption in `ops/decision-log.md`.
 
 **Batch 3 — Data integrity and performance (run unless `quick` argument):**
 ```
@@ -293,7 +292,7 @@ options:
   - "Performance not checked this session"
 ```
 
-For any FAILED item selected, ask the user to describe what broke before generating the report.
+For any FAILED item selected, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to describe what broke before generating the report, and record the assumption in `ops/decision-log.md`.
 
 Record each response verbatim for the Phase 5 report.
 
@@ -310,7 +309,7 @@ options:
   - "Resolution change — FAILED (describe issue after)"
 ```
 
-For any selected item, ask the user to briefly describe what failed before generating the report.
+For any selected item, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to briefly describe what failed before generating the report, and record the assumption in `ops/decision-log.md`.
 
 **Console platform** (`--platform console` or `--platform all`):
 ```
@@ -323,7 +322,7 @@ options:
   - "Cold start (no prior save) — FAILED (describe issue after)"
 ```
 
-For any selected item, ask the user to briefly describe what failed before generating the report.
+For any selected item, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to briefly describe what failed before generating the report, and record the assumption in `ops/decision-log.md`.
 
 **Mobile platform** (`--platform mobile` or `--platform all`):
 ```
@@ -336,7 +335,7 @@ options:
   - "Performance / thermal throttling on target device — FAILED (describe after)"
 ```
 
-For any selected item, ask the user to briefly describe what failed before generating the report.
+For any selected item, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to briefly describe what failed before generating the report, and record the assumption in `ops/decision-log.md`.
 
 ---
 
@@ -470,7 +469,7 @@ somebody did look.
 
 Present the full report in conversation, then ask:
 
-"May I write this smoke check report to `production/qa/smoke-[date].md`?"
+"Writing directly to `production/qa/smoke-[date].md` and logging to `ops/decision-log.md`."
 
 Write only after approval.
 
@@ -582,11 +581,9 @@ describe what collaborative mode requires, not universal behavior.
 - **Never write the report without asking** — Phase 6 requires explicit
   approval before any file is created.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

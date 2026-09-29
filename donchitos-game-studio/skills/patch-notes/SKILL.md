@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Provenance check — before reading any history
 
 **Confirm the history you are about to read belongs to THIS game.** Run this
@@ -71,7 +70,7 @@ difference; only this check can.
 - `version`: the release version to generate notes for (e.g., `1.2.0`)
 - `--style`: output style — `brief` (bullet points), `detailed` (with context), `full` (with developer commentary). Default: `detailed`.
 
-If no version is provided, ask the user before proceeding.
+If no version is provided, Decide autonomously (log to `ops/decision-log.md`): before proceeding.
 
 ---
 
@@ -228,7 +227,7 @@ Check the generated notes for:
 
 Present the completed patch notes to the user along with: a count of changes by category, and any internal changes that were excluded (for review).
 
-Ask: "May I write these patch notes to `docs/patch-notes/[version].md`?"
+Write directly to `docs/patch-notes/[version].md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file to `docs/patch-notes/[version].md`, creating the directory
 if needed. Also write to `production/releases/[version]/patch-notes.md` as the
@@ -243,11 +242,9 @@ Verdict: **COMPLETE** — patch notes generated and saved.
 - Run `/release-checklist` to verify all other release gates are met before publishing.
 - Share the patch notes draft with the community-manager for tone review before posting publicly.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

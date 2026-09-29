@@ -20,15 +20,7 @@ metadata:
 
 When this skill is invoked, orchestrate the release team through a structured pipeline.
 
-**Decision Points:** At each phase transition, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to present
-the user with the subagent's proposals as selectable options. Write the agent's
-full analysis in conversation, then capture the decision with concise labels.
-In `collaborative` mode, the user must approve before moving to the next phase.
-In `guided` mode the pipeline advances automatically unless a phase is BLOCKED;
-in `autonomous` mode it runs end to end, recording each phase outcome via
-`log_decision`. Decisions in `automation_always_ask` categories
-(`is_always_ask_category` helper) always prompt regardless of mode. See
-`docs/automation-modes.md`.
+**Decision Points:** At each phase transition, the orchestrating agent reviews the subagent's proposals directly, records the decision with concise labels in `ops/decision-log.md`, and advances to the next phase — the pipeline runs end to end without pausing for approval. Only decisions matching `ops/always-ask.yaml` pause regardless of how far the pipeline has run. See `docs/automation-modes.md`.
 
 ## Phase 0: Resolve Config
 
@@ -48,7 +40,7 @@ defaults in `docs/config-resolution.md`.
 - **`individual`** (default): `release-manager` only. Other agents consulted via the release-manager, not spawned separately.
 - **`small`**: + `producer` + `devops-engineer` + `qa-lead`.
 - **`studio`**: + `security-engineer` + `analytics-engineer` + `localization-lead`.
-Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
+Directors (CD/TD/PR) still spawn at phase gates regardless of size; a non-core agent needed at `individual` routes through the nearest active core agent with an informational note. **"Phase gate" means any phase that ends in an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) decision point before the pipeline advances** — not every phase. Apply the test literally: if the phase below has no decision point, it is not a gate, and an agent restricted to "phase gates only" is not spawned for it. This active-set scoping applies throughout the pipeline below: any phase that names an agent outside the active set routes through the nearest core agent rather than spawning it.
 
 **Announce the active set before Phase 1 — never let the collapse be silent.**
 Before spawning anything, state in one line which agents this run will actually
@@ -122,7 +114,7 @@ Use the `Agent` tool to spawn each team member as a subagent:
 > spawn agents in parallel; two agents appending to one file race, and the loser's
 > section vanishes silently.
 
-> **Why this does not violate the Collaboration Protocol.** `CLAUDE.md` requires an agent to ask "May I write this to [filepath]?" before Write/Edit. A subagent spawned here writes **without** asking, and that is a deliberate, bounded exception rather than an oversight — the same call already made for `consistency-check` appending to `active.md`. The exception holds only when all three are true: (1) the path is one **you** named in the prompt, so the user approved the destination when they approved the phase; (2) it is a new artifact under `production/`, `docs/` or `tests/`, never an edit to existing source or config; (3) the phase that produced it is itself gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) before the pipeline advances. Outside those three, the agent must ask. **Do not "fix" this by asking per subagent** — a prompt per agent per phase makes an orchestrator unusable, which is why the exception exists.
+> **Autonomous write.** This subagent writes the artifact directly, without asking for approval — this studio runs `autonomous` by default (see `docs/automation-modes.md`). The write is logged to `ops/decision-log.md` as part of the phase's decision record.
 
 Launch independent agents in parallel where the pipeline allows it (e.g., Phase 3 agents can run simultaneously).
 
@@ -166,37 +158,41 @@ Delegate to **producer**:
 
 **If producer declares NO-GO:**
 - Surface the decision immediately: "PRODUCER: NO-GO — [rationale, e.g., S1 bug found in Phase 3]."
-- Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with options:
-  - Fix the blocker and re-run the affected phase
-  - Defer the release to a later date
-  - Override NO-GO with documented rationale (user must provide written justification)
+- Producer decides autonomously among: fix the blocker and re-run the affected
+  phase; defer the release to a later date; or override the NO-GO with
+  documented rationale — logging whichever choice to `ops/decision-log.md`
+  with the rationale and reversibility.
 - **Skip Phase 6 entirely** — do not tag, deploy to staging, deploy to production, or spawn community-manager.
 - Produce a partial report summarizing Phases 1–5 and what was skipped (Phase 6) and why.
 - Verdict: **BLOCKED** — release not deployed.
 
-After the user selects "Override NO-GO with documented rationale":
-- Ask (plain text, not widget): "Please describe the justification for overriding the NO-GO verdict. This will be embedded in the release record."
-- Wait for the user's written justification.
-- Embed the justification text in the partial approval record before Phase 6: append a "⚠️ Override Justification: [user's text]" field.
+If producer overrides the NO-GO:
+- Producer writes the justification for the override directly.
+- Embed the justification text in the partial approval record before Phase 6: append a "⚠️ Override Justification: [producer's text]" field.
 - Only then proceed to Phase 6.
 
 ### Phase 6: Deployment (if GO)
 
-**This phase always requires explicit user approval regardless of
-`modes.automation` — including `autonomous` mode.** Production deployment is
-irreversible and high-stakes; it is NOT covered by the configurable
-`automation_always_ask` categories, so this skill guards it unconditionally.
-Before tagging or deploying, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-- Prompt: "Producer verdict is GO. Execute Phase 6 — tag, deploy to staging,
-  deploy to production?"
+**Check whether this is a first public release or includes a price change —
+those are the only cases in `ops/always-ask.yaml` that require human sign-off,
+regardless of `modes.automation`.** For a first public release or a price
+change, pause and present for explicit human approval:
+- Prompt: "Producer verdict is GO for [first public release | a price change].
+  Execute Phase 6 — tag, deploy to staging, deploy to production?"
 - Options: `[A] Yes, deploy` / `[B] Staging only — hold production` / `[C] Stop here`
+- Log the human decision to `ops/decision-log.md`.
 
-Only after explicit approval, delegate to **release-manager** + **devops-engineer**:
+For every other release (routine updates, patches, content drops with no price
+change), producer decides directly — no human gate — and logs the go-ahead to
+`ops/decision-log.md`.
+
+Once cleared (by the always-ask gate above when it applies, or directly
+otherwise), delegate to **release-manager** + **devops-engineer**:
 - Tag the release in version control
 - Generate changelog using `/changelog`
 - Deploy to staging for final smoke test
-- Deploy to production (only if the user approved production above)
-- Human team action: Monitor dashboards and error rates for 48 hours post-release. Schedule a follow-up retrospective using `/retrospective` at the 48-hour mark.
+- Deploy to production
+- Monitor dashboards and error rates for 48 hours post-release (devops-engineer + performance-analyst). Schedule a follow-up retrospective using `/retrospective` at the 48-hour mark.
 
 Delegate to **community-manager** (in parallel with deployment):
 - Finalize patch notes using `/patch-notes [version]`
@@ -241,7 +237,7 @@ distinction matters here more than anywhere else in the pipeline:
 - **Sub-agents spawned via `Agent`** follow the **bounded exception** documented above
   under "Why this does not violate the Collaboration Protocol" — the path is one you
   named, the artifact is new under `production/`, `docs/` or `tests/`, and the phase
-  is gated by an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not** prompt per write inside
+  is gated by an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`). A sub-agent does **not** prompt per write inside
   those bounds; outside them it must ask.
 - **Sub-skills** are not sub-agents and the exception does not reach them. They
   follow the normal Collaboration Protocol and ask before writing.
@@ -262,7 +258,6 @@ Verdict: **BLOCKED** — release halted; go/no-go was NO or a hard blocker is un
 - Monitor post-release dashboards for 48 hours.
 - Run `/retrospective` if significant issues occurred during the release.
 - Update `project.stage` in `project.yaml` to `Release` after successful deployment (also write `Release` to `production/stage.txt` for backward compatibility with hooks that haven't migrated). `Release` is the terminal stage in the `project.stage` enum — there is no post-launch stage value. Record live/post-launch status in the release report, not in `project.stage`.
-
 
 ## Procedure
 

@@ -230,11 +230,9 @@ or run `/story-readiness [path]`.
 For sprint replanning, use `/sprint-plan update`.
 For end-of-sprint retrospective, use `/retrospective`.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

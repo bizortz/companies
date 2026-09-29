@@ -39,7 +39,6 @@ and known failure points. This skill maintains that list.
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **Workflow tier**: `modes.workflow` as resolved above — supplied by `modes.rigor`
 unless set explicitly — per `docs/workflow-modes.md`; in `audit` mode consider
 `workflow_overrides.system_overrides.<system>` per system as each GDD is read. It
@@ -182,7 +181,7 @@ Check for drift indicators:
 - Stories completed this sprint with no corresponding test files in `tests/`
 - New systems added to `systems-index.md` since the last regression-suite update
 - GDD sections added or revised since the regression suite was last updated
-  (use Grep on GDD file modification hints if available, or ask the user)
+  (use Grep on GDD file modification hints if available, or Decide autonomously (log to `ops/decision-log.md`):)
 - `tests/regression-suite.md` last-updated date vs. current date — if gap >
   2 sprints, flag as likely stale
 
@@ -286,8 +285,8 @@ Tests that are flaky or disabled (do not run in CI):
 
 ## 7. Write Output
 
-Ask: "May I write/update `tests/regression-suite.md` with the current
-regression suite manifest?"
+Write/update `tests/regression-suite.md` directly with the current regression
+suite manifest, and log the update to `ops/decision-log.md`.
 
 For `update` mode: append new entries; never remove existing entries
 (use `Edit` with targeted insertions).
@@ -303,19 +302,17 @@ After writing (if approved):
 - If coverage drift detected: "Regression suite may be drifting. Consider
   running `/regression-suite audit` at the next sprint boundary."
 
-Verdict: **COMPLETE** — regression suite updated. (If user declined write: Verdict: **BLOCKED**.)
+Verdict: **COMPLETE** — regression suite updated.
 
 ---
 
-## Collaborative Protocol
+## Operating Principles
 
-**Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `docs/automation-modes.md` — the rules below
-describe what collaborative mode requires, not universal behavior.
-
-- **Never remove existing regression tests from the manifest** without
-  explicit user approval — removing a test that was deliberately written is a
-  regression risk itself
+- **Never remove existing regression tests from the manifest silently** —
+  removing a test that was deliberately written is a regression risk itself.
+  If a test is truly obsolete, quarantine it (see below) and log the removal
+  decision and rationale to `ops/decision-log.md`; qa-lead reviews removals
+  during the next `/retrospective`.
 - **Gaps are advisory, not blocking** — surface them clearly but do not prevent
   other work from proceeding (except at release gate where regression suite is required)
 - **Quarantine is not deletion** — tests with intermittent failures should be
@@ -323,11 +320,9 @@ describe what collaborative mode requires, not universal behavior.
   `/test-flakiness`
 - **Ask before writing** — always confirm before creating or updating the manifest
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

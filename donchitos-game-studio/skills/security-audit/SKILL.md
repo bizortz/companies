@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 # Security Audit
 
 Security is not optional for any shipped game. Even single-player games have
@@ -67,7 +66,7 @@ Read `project.yaml` to determine the following, falling back to `docs/technical-
   > sets.
   >
   > When either key is absent or empty: **do not assume single-player, and do not
-  > skip Category 2.** Ask the user whether the game has multiplayer or online
+  > skip Category 2.** Decide autonomously (log to `ops/decision-log.md`): whether the game has multiplayer or online
   > features. If you cannot ask, run Category 2 anyway and mark it
   > `NOT ASSESSED — multiplayer scope unconfirmed (platform.multiplayer unset,
   > and no skill sets it)`, which makes `CLEAR TO SHIP` unreachable per Phase 5.
@@ -322,7 +321,7 @@ The Polish → Release gate requires this report with no open CRITICAL or HIGH i
 
 Present the report summary (executive summary + CRITICAL/HIGH findings only) in conversation.
 
-Ask: "May I write the full security audit report to `production/security/security-audit-[date].md`?"
+Write directly to `production/security/security-audit-[date].md` and log the write to `ops/decision-log.md`.
 
 Write only after approval.
 
@@ -349,11 +348,9 @@ If no CRITICAL/HIGH findings:
 - **Multiplayer games have a higher bar** — any HIGH finding in a multiplayer context should be treated as CRITICAL
 - **This is not a penetration test** — this audit covers common patterns; a real pentest by a human security professional is recommended before any competitive or monetised multiplayer launch
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

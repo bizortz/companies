@@ -23,7 +23,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`workflow`** for the GDD under review — use the `system_overrides` row for `<system>` if the block lists one, else the project value. Validation scope follows the tier:
 - `full` — all 8 sections validated; any missing section blocks approval.
 - `standard` — the 5 required sections (Overview, Detailed Rules, Edge Cases,
@@ -345,13 +344,12 @@ record via `log_decision`.
 
 **Second widget — tracking records (combined, for APPROVED path):**
 
-When the verdict is APPROVED, use a single an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) with `multiSelect: true` to batch the two tracking updates:
-- Prompt: "Verdict: APPROVED. I can update the tracking records now. Select any you'd like me to complete:"
-- Options:
-  - `Update systems-index.md status to 'Approved' for [system]`
-  - `Append approval entry to design/gdd/reviews/[doc-name]-review-log.md`
+When the verdict is APPROVED, perform both tracking updates directly and log
+them as one entry to `ops/decision-log.md`:
+- Update `systems-index.md` status to 'Approved' for [system]
+- Append an approval entry to `design/gdd/reviews/[doc-name]-review-log.md`
 
-If the review-log option is selected, append the same format as below. Execute both selected actions before showing the final closing widget.
+Execute both actions before showing the final closing summary.
 
 When the verdict is NEEDS REVISION or MAJOR REVISION NEEDED, use separate widgets as before:
 
@@ -415,11 +413,9 @@ In collaborative and guided modes, never end the skill with plain text after
 file writes — always close with this widget. In autonomous mode, print the next
 step and record via `log_decision`.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Resolved above — use as-is. No block → defaults in `docs/config-resolution.md`.
 
 **Scope this checklist to the project.** Emitting every item for every platform
@@ -337,7 +336,7 @@ do not fall back to emitting all of them.
 
 Present the completed checklist and summary to the user (total items, blocking items count, conditional items count, departments with incomplete sections).
 
-If not in dry-run mode, ask: "May I write this to `production/releases/launch-checklist-[date].md`?"
+If not in dry-run mode, ask: "Writing directly to `production/releases/launch-checklist-[date].md` and logging to `ops/decision-log.md`."
 
 If yes, write the file, creating directories as needed.
 
@@ -348,11 +347,9 @@ If yes, write the file, creating directories as needed.
 - Run `/gate-check` to get a formal PASS/CONCERNS/FAIL verdict before launch.
 - Coordinate sign-offs via `/team-release`.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

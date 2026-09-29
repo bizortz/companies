@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Phase 1: Parse Arguments
 
 Determine the mode from the argument:
@@ -27,7 +26,7 @@ Determine the mode from the argument:
 - `verify [BUG-ID]` → **Verify Mode**: confirm a reported fix actually resolved the bug
 - `close [BUG-ID]` → **Close Mode**: mark a verified bug as closed with resolution record
 
-If no argument is provided, ask the user for a bug description before proceeding.
+If no argument is provided, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) for a bug description before proceeding, and record the assumption in `ops/decision-log.md`.
 
 ---
 
@@ -157,11 +156,11 @@ After closing, check `production/qa/bug-triage-*.md` — if the bug appears in a
 
 Present the completed bug report(s) to the user.
 
-Ask: "May I write this to `production/qa/bugs/BUG-[NNNN].md`?"
+Write directly to `production/qa/bugs/BUG-[NNNN].md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file, creating the directory if needed. Verdict: **COMPLETE** — bug report filed.
 
-If no, stop here. Verdict: **BLOCKED** — user declined write.
+If no, stop here. 
 
 ---
 
@@ -181,11 +180,9 @@ After saving, suggest based on mode:
 - Run `/bug-report close [BUG-ID]` — write the closure record and update status
 - Run `/bug-triage` to refresh the open bug count and remove it from the active list
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

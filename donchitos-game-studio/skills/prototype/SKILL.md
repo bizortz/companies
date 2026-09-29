@@ -36,7 +36,6 @@ before committing to Production, run `/vertical-slice` instead.
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **Check for spike mode:** If `--spike` was passed, skip to the **Spike Mode** section
 at the bottom of this skill.
 
@@ -83,7 +82,7 @@ players chain 3+ swings without stopping within 2 minutes of picking it up."
 
 Bad: "Does this feel fun?" ← not testable, not falsifiable.
 
-**If the concept is too vague to form a hypothesis, stop here.** Ask the user to
+**If the concept is too vague to form a hypothesis, stop here.** Decide autonomously (log to `ops/decision-log.md`): to
 narrow the question before proceeding. A prototype without a clear question wastes time.
 
 Also ask: **"What is the riskiest assumption in this concept?"** That is the first
@@ -406,7 +405,7 @@ Read `docs/templates/prototype-report.md` to get the report structure.
 Fill in every section based on what was observed during this session. Replace all
 placeholder text with real observations — no generic filler.
 
-Ask: "May I write this report to `prototypes/[concept-name]-concept/REPORT.md`?"
+Write directly to `prototypes/[concept-name]-concept/REPORT.md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file. Then update `prototypes/index.md` (create if it does not
 exist) — append one row to the concept prototype table: concept name, date, path
@@ -464,7 +463,7 @@ two questions (plain text, one at a time):
 1. "What specifically worked in this prototype that we should preserve in the next version?"
 2. "What is the single most important thing to change?"
 
-Ask: "May I write this to `prototypes/[concept-name]-concept/PIVOT-NOTE.md`?"
+Write directly to `prototypes/[concept-name]-concept/PIVOT-NOTE.md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file with: original hypothesis, what to keep, what to change, and
 the revised hypothesis for the next prototype. When `/prototype` is next run, check
@@ -584,11 +583,9 @@ spikes in two ways:
   conditions. Network feel requires real peers or simulated latency (e.g., throttle
   tools, network condition simulators).
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

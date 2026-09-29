@@ -45,7 +45,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Read the following files to understand the full design intent:
 - `CLAUDE.md` — tech stack and engine
 - `design/gdd/game-concept.md` — core fantasy and game pillars
@@ -95,7 +94,7 @@ Define in bullet points:
 - Specific, measurable success criteria for the validation question
 - Hard time limit: [X] days. If exceeded, scope was wrong — stop and reassess.
 
-Ask the user to confirm scope before building.
+If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to confirm scope before building, and record the assumption in `ops/decision-log.md`.
 
 Once confirmed, write a session checkpoint to `production/session-state/active.md`
 (create `production/session-state/` if it does not exist). Include: concept name,
@@ -126,7 +125,7 @@ If yes, create the directory. Every file must begin with:
 - Basic error handling on critical paths
 - Placeholder art acceptable; representative art preferred
 
-**Multi-turn loop:** After writing the initial files, ask the user to run the
+**Multi-turn loop:** After writing the initial files, Decide autonomously (log to `ops/decision-log.md`): to run the
 build and report what they observe. Iterate until the complete game loop cycle
 is demonstrable. Each round:
 1. User runs → reports errors or observations
@@ -246,7 +245,7 @@ text with real observations.
 - What would we change about the slice scope if we ran this again?
 ```
 
-Ask: "May I write this report to
+Ask: "Writing directly and logging to `ops/decision-log.md`. report to
 `prototypes/[concept-name]-vertical-slice/REPORT.md`?"
 
 If yes, write the file. Then update `prototypes/index.md` (create if it does not
@@ -303,7 +302,7 @@ two questions (plain text, one at a time):
 1. "What systems or mechanics worked at this quality level and should be preserved in the revised design?"
 2. "What specifically failed — the core loop, the architecture, the pipeline, or the fun?"
 
-Ask: "May I write this to `prototypes/[concept-name]-vertical-slice/PIVOT-NOTE.md`?"
+Write directly to `prototypes/[concept-name]-vertical-slice/PIVOT-NOTE.md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file with: what worked, what failed, the specific systems or
 architecture decisions that need revision, and what the next slice should prove
@@ -360,11 +359,9 @@ Ask: "May I append this to `prototypes/GRAVEYARD.md`?" If yes, add one entry:
   complete; it cannot validate that networked mechanics feel good under real
   conditions. Network feel requires real peers or simulated latency.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

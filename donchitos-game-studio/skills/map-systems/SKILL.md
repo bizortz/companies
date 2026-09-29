@@ -32,7 +32,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`docs.density`** — it controls per-section *depth*, where `workflow`
 controls which sections exist. `modes.rigor` sets both together; set
 `docs.density` explicitly to vary depth alone: `terse` = one-line system descriptions;
@@ -86,19 +85,19 @@ for systems decomposition.
 - Glob `design/gdd/*.md` — check which system GDDs already exist
 
 **If the systems index already exists:**
-- Read it and present current status to the user
-- Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to ask:
-  "The systems index already exists with [N] systems ([M] designed, [K] not started).
-  What would you like to do?"
-  - Options: "Update the index with new systems", "Design the next undesigned system",
+- Read it and record the current status
+- Decide autonomously among the options below (default: update the index with new systems if new
+  content exists in the concept doc, otherwise design the next undesigned system),
+  and log the choice to `ops/decision-log.md`:
+  - "Update the index with new systems", "Design the next undesigned system",
     "Review and revise priorities"
 
 ---
 
-## Phase 2: Systems Enumeration (Collaborative)
+## Phase 2: Systems Enumeration (Iterative)
 
 Extract and identify all systems the game needs. This is the creative core of the
-skill — it requires human judgment because concept docs rarely enumerate every
+skill — it requires careful judgment because concept docs rarely enumerate every
 system explicitly.
 
 ### Step 2a: Extract Explicit Systems
@@ -131,7 +130,7 @@ need more systems than the concept doc mentions. Use this inference pattern:
 
 Explain in conversation text why each implicit system is needed (with examples).
 
-### Step 2c: User Review
+### Step 2c: Self-Review
 
 Present the enumeration organized by category. For each system, show:
 - Name
@@ -139,25 +138,19 @@ Present the enumeration organized by category. For each system, show:
 - Brief description (1 sentence)
 - Whether it was explicit (from concept) or implicit (inferred)
 
-Then use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to capture feedback:
+Then self-check the enumeration against these questions before proceeding:
 - "Are there systems missing from this list?"
 - "Should any of these be combined or split?"
 - "Are there systems listed that this game does NOT need?"
 
-**At `collaborative`** — iterate until the user approves the enumeration.
-**At `guided`** — ask once, apply the answer, and proceed; do not loop.
-**At `autonomous`** — do not ask. Record the enumeration and its inferred systems
-via `log_decision` and proceed.
-
-> **The loop needed an exit that does not depend on being asked.**
-> `automation-modes.md:56` defines `autonomous` as *"No an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)"*, so a
-> loop terminating on "the user approves" has no termination path there at all.
-> Same class as Step 5b, one level up: that was an unconditional *write* gate,
-> this is an unconditional *control-flow loop* around the question.
+Do not loop waiting to be asked — record the enumeration and the reasoning
+behind any combine/split/omit calls via an `ops/decision-log.md` entry, and
+proceed directly to Phase 3. If a call is genuinely ambiguous and high-cost to
+reverse, escalate to game-designer rather than guessing silently.
 
 ---
 
-## Phase 3: Dependency Mapping (Collaborative)
+## Phase 3: Dependency Mapping (Iterative)
 
 For each system, determine what it depends on. A system "depends on" another if
 it cannot function without that other system existing first.
@@ -182,26 +175,28 @@ Arrange systems into layers:
 ### Step 3c: Detect Circular Dependencies
 
 Check for cycles in the dependency graph. If found:
-- Highlight them to the user
+- Record them explicitly in the output
 - Propose resolutions (interface abstraction, simultaneous design, breaking the
   cycle by defining a contract between the two systems)
 
-### Step 3d: Present to User
+### Step 3d: Self-Review
 
-Show the dependency map as a layered list. Highlight:
+Record the dependency map as a layered list. Check for:
 - Any circular dependencies
 - Any "bottleneck" systems (many others depend on them — these are high-risk)
 - Any systems with no dependents (leaf nodes — lower risk, can be designed late)
 
-Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to ask: "Does this dependency ordering look right? Any
-dependencies I'm missing or that should be removed?"
+Self-check: "Does this dependency ordering hold up? Are there dependencies
+missing or that should be removed?" Resolve any doubt using the heuristics in
+Step 3a-3c, log the final ordering and reasoning to `ops/decision-log.md`, and
+proceed — do not wait to be asked.
 
 **Review mode check** — apply before spawning TD-SYSTEM-BOUNDARY:
 - `solo` → skip. Note: "TD-SYSTEM-BOUNDARY skipped — Solo mode." Proceed to priority assignment.
 - `lean` → skip (not a PHASE-GATE). Note: "TD-SYSTEM-BOUNDARY skipped — Lean mode." Proceed to priority assignment.
 - `full` → spawn as normal.
 
-**After dependency mapping is approved, spawn `technical-director` via `Agent` using gate TD-SYSTEM-BOUNDARY (`docs/director-gates/td-system-boundary.md`) before proceeding to priority assignment.**
+**After dependency mapping is logged, spawn `technical-director` via `Agent` using gate TD-SYSTEM-BOUNDARY (`docs/director-gates/td-system-boundary.md`) before proceeding to priority assignment.**
 
 Pass: the dependency map summary, layer assignments, bottleneck systems list, any circular dependency resolutions.
 
@@ -209,7 +204,7 @@ Present the assessment. If REJECT, revise the system boundaries with the user be
 
 ---
 
-## Phase 4: Priority Assignment (Collaborative)
+## Phase 4: Priority Assignment (Iterative)
 
 Assign each system to a priority tier based on what milestone it's needed for.
 
@@ -222,13 +217,16 @@ Use these heuristics for initial assignment:
 - **Alpha**: All remaining gameplay systems
 - **Full Vision**: Polish, meta, and nice-to-have systems
 
-### Step 4b: User Review
+### Step 4b: Self-Review
 
 Present the priority assignments in a table. For each tier, explain why systems
 were placed there.
 
-Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) to ask: "Do these priority assignments match your vision?
-Which systems should be higher or lower priority?"
+Self-check against the game concept and pillars: "Do these priority assignments
+match the stated vision? Should any system be higher or lower priority?"
+Resolve any doubt against `design/gdd/game-pillars.md` if it exists, otherwise
+the game concept doc, log the final assignments and reasoning to
+`ops/decision-log.md`, and proceed.
 
 Explain reasoning in conversation: "I placed [system] in MVP because the core loop
 requires it — without [system], the 30-second loop can't function."
@@ -263,7 +261,7 @@ both, and cites the pillar it serves:
 - `lean` → skip (not a PHASE-GATE). Note: "PR-SCOPE skipped — Lean mode." Proceed to writing the systems index.
 - `full` → spawn as normal.
 
-**After priorities are approved, spawn `producer` via `Agent` using gate PR-SCOPE (`docs/director-gates/pr-scope.md`) before writing the index.**
+**After priorities are logged, spawn `producer` via `Agent` using gate PR-SCOPE (`docs/director-gates/pr-scope.md`) before writing the index.**
 
 Pass: total system count per milestone tier, estimated implementation volume per tier (system count × average complexity), team size, stated project timeline.
 
@@ -294,7 +292,7 @@ systems index with all data from Phases 2-4:
 - Fill the high-risk systems
 - Fill progress tracker (all systems "Not Started" initially, unless GDDs already exist)
 
-### Step 5b: Approval
+### Step 5b: Write directly
 
 Present a summary of the document:
 - Total systems count by category
@@ -302,18 +300,9 @@ Present a summary of the document:
 - First 3 systems in the design order
 - Any high-risk items
 
-**At `automation: collaborative`** — ask: "May I write the systems index to
-`design/gdd/systems-index.md`?" Wait for approval. Write the file only after
-"yes."
-
-**At `automation: guided`** — present the summary above, name the destination
-(`design/gdd/systems-index.md`), and write it without waiting for an explicit
-"yes", per `docs/automation-modes.md`. Say what you wrote afterwards.
-
-> **Keep this line scoped to its mode.** `automation-modes.md` says `guided`
-> *"proceeds after a short summary, does not wait for explicit yes"*, and this
-> skill's own Collaborative Protocol section is scoped to `collaborative`. An
-> unconditional "wait for approval" here collides with both.
+Write the systems index directly to `design/gdd/systems-index.md`, name what
+was written, and log the decision to `ops/decision-log.md` per
+`docs/automation-modes.md`. Do not wait to be asked.
 
 **Review mode check** — apply before spawning CD-SYSTEMS:
 - `solo` → skip. Note: "CD-SYSTEMS skipped — Solo mode." Proceed to Phase 7 next steps.
@@ -369,7 +358,7 @@ Once a system is selected, invoke the `/design-system [system-name]` skill.
 The `/design-system` skill handles the full GDD authoring process:
 - Gathers context from game concept, systems index, and dependency GDDs
 - Creates a file skeleton immediately
-- Walks through all 8 required sections one at a time (collaborative, incremental)
+- Walks through all 8 required sections one at a time (iterative, incremental)
 - Cross-references existing docs to prevent contradictions
 - Routes to specialist agents for domain expertise
 - Writes each section to file as soon as it's approved
@@ -407,22 +396,21 @@ After any individual GDD is completed:
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-**Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `docs/automation-modes.md` — the rules below
-describe what collaborative mode requires, not universal behavior.
+This studio runs `autonomous` by default (see `docs/automation-modes.md`).
+This skill follows the autonomous decision principle at every phase:
 
-This skill follows the collaborative design principle at every phase:
-
-1. **Question -> Options -> Decision -> Draft -> Approval** at every step
-2. **an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`)** at every decision point (Explain -> Capture pattern):
-   - Phase 2: "Missing systems? Combine or split?"
-   - Phase 3: "Dependency ordering correct?"
-   - Phase 4: "Priority assignments match your vision?"
-   - Phase 5: "May I write the systems index?"
-   - Phase 6: "Start designing, pick different, or stop?" then hand off to `/design-system`
-3. **"May I write to [filepath]?"** before every file write
+1. **Explain -> Decide -> Draft -> Write -> Log** at every step — no human
+   approval gate, since there is no standing human decision-maker to ask.
+2. Decide autonomously at every decision point that would previously have
+   been a question, and record the reasoning in `ops/decision-log.md`:
+   - Phase 2: which systems are missing, combined, or split
+   - Phase 3: dependency ordering
+   - Phase 4: priority assignments
+   - Phase 5: whether to write the systems index (default: yes, immediately)
+   - Phase 6: whether to start designing, pick a different system, or stop — then hand off to `/design-system`
+3. **Write directly and log the write to `ops/decision-log.md`** for every file write.
 4. **Incremental writing**: Update the systems index after each system is designed
 5. **Handoff**: Individual GDD authoring is owned by `/design-system`, which handles
    incremental section writing, cross-referencing, design review, and index updates
@@ -450,11 +438,9 @@ If context reaches or exceeds 70% at any point, append this notice:
 - Run `/design-review design/gdd/[system].md` in a fresh session after each GDD is authored
 - Run `/gate-check pre-production` when all MVP GDDs are authored and reviewed
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

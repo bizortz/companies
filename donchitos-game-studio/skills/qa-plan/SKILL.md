@@ -35,7 +35,6 @@ plan.
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **Workflow tier**: resolve per the GDD's system as each is read (per
 `docs/workflow-modes.md`): `workflow_overrides.system_overrides.<system>`
 if the block lists one, else the project value. It sets how many GDD sections
@@ -334,27 +333,21 @@ Silently append to `production/session-state/active.md` (create the file if it d
 
 ## Collaborative Protocol
 
-**Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `docs/automation-modes.md` — the rules below
-describe what collaborative mode requires, not universal behavior.
-
-- **Never write the plan without asking** — Phase 5 requires explicit approval.
+- **Write the plan directly once Phase 5's checks pass** — log the write to `ops/decision-log.md`; no human approval gate.
 - **Classify conservatively**: when a story is ambiguous between Logic and
   Integration, classify it as Integration — it requires both unit and
   integration tests.
 - **Do not invent test cases** beyond what acceptance criteria and GDD formulas
   support. If a formula is absent from the GDD, flag it rather than guessing.
-- **Playtest requirements are advisory**: the user decides whether a playtest
+- **Playtest requirements are advisory**: the owning agent decides whether a playtest
   is warranted for borderline Visual/Feel stories. Flag the case; do not mandate.
 - Decide autonomously and record the decision in `ops/decision-log.md`; escalate to your manager only if it crosses your domain boundary or matches an entry in `ops/always-ask.yaml` (see `docs/automation-modes.md`).
   Keep all other phases non-interactive — present findings, then ask once to
   approve the write.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

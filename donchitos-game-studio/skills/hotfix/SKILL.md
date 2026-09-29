@@ -66,7 +66,7 @@ Status: IN PROGRESS
 [How to revert if the fix causes new issues]
 ```
 
-Ask: "May I write this to `production/hotfixes/hotfix-[date]-[short-name].md`?"
+Write directly to `production/hotfixes/hotfix-[date]-[short-name].md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file, creating the directory if needed.
 
@@ -87,7 +87,7 @@ If the check passes, use an autonomous decision (logged to `ops/decision-log.md`
   - `[B] Use a different base ref — I'll specify it`
   - `[C] Skip — I'll create the branch myself`
 
-Only run `git checkout -b hotfix/[short-name] [base-ref]` if user selects [A]. If [B]: ask the user for the base ref, then run the command with that ref. If [C]: skip branch creation and proceed to Phase 4.
+Only run `git checkout -b hotfix/[short-name] [base-ref]` if user selects [A]. If [B]: If not already specified in project files, decide autonomously (using the most reasonable default given current project state) for the base ref, then run the command with that ref, and record the assumption in `ops/decision-log.md`. If [C]: skip branch creation and proceed to Phase 4.
 
 ---
 
@@ -95,11 +95,14 @@ Only run `git checkout -b hotfix/[short-name] [base-ref]` if user selects [A]. I
 
 Find the root cause. Draft the minimal fix: which files change, what the change does, and what it deliberately leaves alone. Do NOT refactor, clean up, or add features alongside the hotfix.
 
-Present the root cause and proposed fix, then ask: "May I implement this fix?" Do not modify any code before this approval — an emergency flow earns its audit trail by approving the change *before* it exists, not after.
+Record the root cause and proposed fix in the hotfix record before touching
+code — an emergency flow earns its audit trail by logging the plan *before*
+implementing it, not after. Log the plan to `ops/decision-log.md`, then
+proceed directly to implementation.
 
 ---
 
-## Phase 4b: Implement (only after approval)
+## Phase 4b: Implement
 
 Implement the approved minimal change. Validate the fix by running targeted tests for the affected system. Check for regressions in adjacent systems.
 
@@ -149,15 +152,15 @@ Do not skip this gate. A hotfix that breaks something else is worse than the ori
 
 ## Phase 6: Update Bug Status and Deploy
 
-> **STOP — deployment requires explicit approval, unconditionally.** Merging a
-> hotfix to a release branch is the one irreversible act in this skill, so it is
-> gated even though branch creation (reversible) already is. Before any merge,
-> tag, or deploy, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
+> **Merging a hotfix to a release branch is the one irreversible act in this
+> skill.** Before any merge, tag, or deploy, producer makes the call directly
+> (having already returned APPROVE in Phase 5) and logs it to
+> `ops/decision-log.md` with reversibility `irreversible`:
 >
-> - Prompt: "Hotfix validated and approved. Merge to the release branch and
->   deploy?"
-> - Options: `[A] Yes — merge and deploy` / `[B] Merge to development only — hold
->   the release` / `[C] Stop here`
+> - "Hotfix validated and approved by lead-programmer, qa-tester, and
+>   producer. Merge to the release branch and deploy."
+> - If any doubt remains, producer may choose to merge to development only and
+>   hold the release, logging why.
 >
 > This holds regardless of `modes.automation`, including `autonomous`. An
 > emergency process is exactly where an unreviewed irreversible step is most
@@ -225,11 +228,9 @@ Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation
   - `[B] Run /patch-notes to document this hotfix`
   - `[C] Stop here`
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

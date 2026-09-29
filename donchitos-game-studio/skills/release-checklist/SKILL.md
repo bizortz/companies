@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Resolved above — use as-is. No block → defaults in `docs/config-resolution.md`.
 
 **Scope this checklist to the project.** Emitting every item for every platform
@@ -306,7 +305,7 @@ resolution and estimated time to address them.]
 
 Present the checklist to the user with: total checklist items, number of known blockers (FIXME/HACK counts, known bugs).
 
-Ask: "May I write this to `production/releases/release-checklist-[version].md`?"
+Write directly to `production/releases/release-checklist-[version].md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file, creating the directory if needed.
 
@@ -317,11 +316,9 @@ If yes, write the file, creating the directory if needed.
 - Run `/gate-check` for a formal phase gate verdict before proceeding to release.
 - Coordinate final sign-offs via `/team-release`.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

@@ -163,11 +163,9 @@ Always end with:
 - When recommending cuts, prioritize preserving the core player experience over nice-to-haves
 - Always quantify scope changes — "it feels bigger" is not actionable, "+35% items" is
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

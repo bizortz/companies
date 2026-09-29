@@ -56,7 +56,6 @@ See `docs/director-gates.md` for the full check pattern and mode definitions. In
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **Resolve the workflow tier per story** (per `docs/workflow-modes.md`):
 for the system a story belongs to (**the GDD filename stem** of its `GDD:` path;
 the `[system]` segment of a `TR-[system]-NNN` ID is a fallback alias only), use the
@@ -83,7 +82,7 @@ coverage target. Distinct axis from `workflow`.
   recent file), extract every story path it references, validate each one.
 - **`all`**: glob `production/epics/**/*.md`, exclude `EPIC.md` index files,
   validate every story file found.
-- **No argument**: ask the user which scope to validate.
+- **No argument**: If not already specified in project files, decide autonomously (using the most reasonable default given current project state) which scope to validate, and record the assumption in `ops/decision-log.md`.
 
 If no argument is given, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
 - "What would you like to validate?"
@@ -388,10 +387,11 @@ This skill is read-only. It never proposes edits or asks to write files.
 
 After reporting findings, offer:
 
-"Would you like help filling in the gaps for any of these stories? I can
-draft the missing sections for your approval."
+Draft the missing sections for the highest-priority NOT READY story directly
+(rather than waiting to be asked), and note in the report which story was
+auto-drafted so the story owner can review it.
 
-If the user says yes for a specific story, draft only the missing sections
+For that story, draft only the missing sections
 in conversation. Do not use Write or Edit tools — the user (or
 `/create-stories`) handles writing.
 
@@ -464,11 +464,9 @@ Handle the verdict per standard rules in `director-gates.md`:
 - Run `/story-readiness sprint` to check all stories in the current sprint at once
 - Run `/create-stories [epic-slug]` if a story file is missing entirely
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

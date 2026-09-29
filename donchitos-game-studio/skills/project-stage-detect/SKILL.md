@@ -30,7 +30,6 @@ of artifacts, and gaps that need attention. It's especially useful when:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Resolved above — use as-is. No block → defaults in
 `docs/config-resolution.md`.
 
@@ -198,9 +197,9 @@ If user provided a role argument (e.g., `/project-stage-detect programmer`):
 - Holistic view of all gaps
 - Highest-priority items across domains
 
-### 6. Request Approval Before Writing
+### 6. Write Directly
 
-**Collaborative protocol**:
+**Autonomous protocol**:
 ```
 I've analyzed your project. Here's what I found:
 
@@ -215,10 +214,10 @@ Recommended next steps:
 - [Priority 2]
 - [Priority 3]
 
-May I write the full stage analysis to production/project-stage-report.md?
+Writing the full stage analysis to production/project-stage-report.md and logging to ops/decision-log.md.
 ```
 
-Wait for user approval before creating the file.
+Proceed to write immediately and log the decision to `ops/decision-log.md`.
 
 ---
 
@@ -253,23 +252,20 @@ absent GDD at `minimal`, where code is the expected next step):
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-This skill follows the collaborative design principle:
+This skill follows the autonomous detection principle:
 
-1. **Question First**: Ask about gaps, don't assume
-2. **Present Options**: "Should I create X, or is it tracked elsewhere?"
-3. **User Decides**: Wait for direction
-4. **Show Draft**: Display report summary
-5. **Get Approval**: "May I write to production/project-stage-report.md?"
+1. **Investigate gaps directly**: Don't assume — check the filesystem and project state
+2. **Decide directly**: "Create X, or is it tracked elsewhere?" — resolve using existing project files as evidence
+3. **Show findings**: Display report summary and the reasoning behind each gap call
+4. **Write directly** and log the write to `ops/decision-log.md`.
 
-**Never** silently write files. **Always** show findings and ask before creating artifacts.
-
+**Never** silently invent content to fill a gap. **Always** show findings and log the decision before creating artifacts.
 
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

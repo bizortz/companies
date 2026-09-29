@@ -33,7 +33,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`story_granularity`** — it sets how
 many stories to allocate per sprint, scaled by velocity: **2–4** at `coarse`,
 **6–10** at `balanced` (default), **15–25** at `fine`.
@@ -169,10 +168,10 @@ For `update`:
 
 1. Read the most recent sprint plan from `production/sprints/`.
 2. Present the current story list with their current statuses from `production/sprint-status.yaml`.
-3. Ask the user what to change: stories to add, remove, reprioritize, or re-estimate. Decide autonomously and record the decision in `ops/decision-log.md`; escalate to your manager only if it crosses your domain boundary or matches an entry in `ops/always-ask.yaml` (see `docs/automation-modes.md`).
+3. If not already specified in project files, decide autonomously (using the most reasonable default given current project state) what to change: stories to add, remove, reprioritize, or re-estimate, and record the assumption in `ops/decision-log.md`. Decide autonomously and record the decision in `ops/decision-log.md`; escalate to your manager only if it crosses your domain boundary or matches an entry in `ops/always-ask.yaml` (see `docs/automation-modes.md`).
 4. Apply the changes and re-present the full revised plan for review.
 5. Re-run the producer feasibility gate (Phase 4) on the revised plan.
-6. Write the updated markdown plan and yaml together (same approval as `new` mode).
+6. Write the updated markdown plan and yaml together directly (same write flow as `new` mode).
 
 Note: `update` mode does not reset story statuses. Stories already marked `in-progress` or `done` keep their status. Only `backlog` and `ready-for-dev` stories can be removed or reprioritized freely.
 
@@ -217,7 +216,7 @@ After generating a new sprint plan, also prepare the `production/sprint-status.y
 This is the machine-readable source of truth for story status — read by
 `/sprint-status`, `/story-done`, and `/help` without markdown parsing.
 
-**Do not write the yaml yet** — hold it in context. The producer feasibility gate (Phase 4, `full` review mode only) may revise the story list; the QA plan check (Phase 5) runs in every mode. Both files are written together after Phase 5 in a single write approval.
+**Do not write the yaml yet** — hold it in context. The producer feasibility gate (Phase 4, `full` review mode only) may revise the story list; the QA plan check (Phase 5) runs in every mode. Both files are written together directly after Phase 5.
 
 Format:
 
@@ -275,7 +274,7 @@ Pass: proposed story list (titles, estimates, dependencies), total team capacity
 
 Present the producer's assessment.
 
-If UNREALISTIC: revise the story selection (defer stories to Should Have or Nice to Have) and re-present the updated plan before asking for write approval.
+If UNREALISTIC: revise the story selection (defer stories to Should Have or Nice to Have) and re-present the updated plan before writing.
 
 If CONCERNS, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
 - Prompt: "Producer flagged concerns with this sprint plan. How do you want to proceed?"
@@ -284,11 +283,11 @@ If CONCERNS, use an autonomous decision (logged to `ops/decision-log.md` per `do
   - `[B] Adjust scope — defer some Should Have stories`
   - `[C] Extend the sprint timeline`
 
-If [A]: proceed to write approval.
-If [B]: revise the story list, re-present the updated plan, then proceed to write approval.
-If [C]: adjust sprint dates and capacity, re-present the updated plan, then proceed to write approval.
+If [A]: proceed to write directly.
+If [B]: revise the story list, re-present the updated plan, then write directly.
+If [C]: adjust sprint dates and capacity, re-present the updated plan, then write directly.
 
-After handling the producer's verdict, ask: "May I write the sprint plan to `production/sprints/sprint-[N].md` and `production/sprint-status.yaml`?" If yes, write both files (creating directories as needed). Verdict: **COMPLETE** — sprint plan and status file created. If no: Verdict: **BLOCKED** — user declined write.
+After handling the producer's verdict, write `production/sprints/sprint-[N].md` and `production/sprint-status.yaml` directly (creating directories as needed) and log the write to `ops/decision-log.md`. Verdict: **COMPLETE** — sprint plan and status file created.
 
 After writing, add:
 
@@ -344,11 +343,9 @@ After the sprint plan is written and QA plan status is resolved:
 
 `modes.review_mode` in `project.yaml` is the primary source; `production/review-mode.txt` is the legacy fallback. Both are read by `/sprint-plan`, `/story-readiness`, `/story-done`, and other gate-using skills at startup.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

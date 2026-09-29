@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 # Soak Test
 
 A soak test (also called an endurance test) is an extended play session run
@@ -302,7 +301,7 @@ for — say how far it got and which checkpoints were never reached
 
 Present the protocol summary in conversation, then ask:
 
-"May I write this soak test protocol to
+"Writing directly and logging to `ops/decision-log.md`. soak test protocol to
 `production/qa/soak-test-[date]-[duration].md`?"
 
 Write only after approval.
@@ -330,11 +329,9 @@ If the verdict is FAIL, run `/smoke-check` again after fixing the issues."
   regression soaks after a specific fix, not the first pass
 - **Ask before writing** — always confirm before creating the protocol file
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

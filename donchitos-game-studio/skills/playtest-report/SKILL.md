@@ -20,7 +20,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 Determine the mode:
 
 - `new` → generate a blank playtest report template
@@ -143,7 +142,7 @@ Present the creative director's assessment before saving the report. If CONCERNS
 
 ## Phase 4: Save Report
 
-Ask: "May I write this playtest report to `production/qa/playtests/playtest-[date]-[tester].md`?"
+Write directly to `production/qa/playtests/playtest-[date]-[tester].md` and log the write to `ops/decision-log.md`.
 
 If yes, write the file, creating the directory if needed.
 
@@ -157,11 +156,9 @@ Verdict: **COMPLETE** — playtest report generated.
 - After addressing design changes: re-run `/design-review` on the updated GDD.
 - After fixing bugs: re-run `/bug-triage` to update priorities.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

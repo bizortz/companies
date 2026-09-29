@@ -35,7 +35,6 @@ See `docs/director-gates.md` for the full check pattern. Individual gate definit
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **Workflow tier**: resolved per the story's system (per
 `docs/workflow-modes.md`) — **the GDD filename stem** of the story's
 `GDD:` path (`design/gdd/<stem>.md` → `<stem>`), with the `[system]` segment of
@@ -71,7 +70,7 @@ read that file directly.
 3. If multiple in-progress stories are found, use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
    - "Which story are we completing?"
    - Options: list the in-progress story file names.
-4. If no story can be found, ask the user to provide the path.
+4. If no story can be found, If not already specified in project files, decide autonomously (using the most reasonable default given current project state) to provide the path, and record the assumption in `ops/decision-log.md`.
 
 ---
 
@@ -362,7 +361,7 @@ For each deviation found, categorize:
 - **BLOCKING** — implementation contradicts the GDD or ADR (must fix before
   marking complete)
 - **ADVISORY** — implementation drifts slightly from spec but is functionally
-  equivalent (document, user decides)
+  equivalent (document it; the story's owning agent decides whether to accept or fix)
 - **OUT OF SCOPE** — additional files were touched beyond the story's stated
   boundary (flag for awareness — may be valid or scope creep)
 
@@ -654,17 +653,11 @@ If no more stories are ready but Must Have stories are still In Progress (not Co
 
 ---
 
-## Collaborative Protocol
+## Autonomous Operating Protocol
 
-**In `collaborative` mode (the default).** For `guided` and `autonomous` modes,
-see `docs/automation-modes.md` — the rules below describe collaborative
-behavior. The BLOCKED-override close (Phase 7) always prompts regardless of mode
-(it's a `scope_changes` always-ask decision).
-
-- **Never mark a story complete without user approval** — Phase 7 requires an
-  explicit "yes" before any file is edited.
-- **Never auto-fix failing criteria** — report them and ask what to do.
-- **Deviations are facts, not judgments** — present them neutrally; the user
+- **Mark a story complete directly once its acceptance criteria are verifiably met** — Phase 7 writes the completion status and logs the decision to `ops/decision-log.md`; overriding a BLOCKED status to force completion is a `scope_changes`-class decision and escalates to producer rather than being made silently.
+- **Never auto-fix failing criteria** — report them and escalate to the story's owner (game-designer or systems-designer) for a decision on how to proceed.
+- **Deviations are facts, not judgments** — present them neutrally; the owning agent
   decides if they are acceptable.
 - **BLOCKED and NOT ASSESSED verdicts are advisory** — the user can override and
   mark complete anyway; document the risk explicitly if they do. For NOT
@@ -682,11 +675,9 @@ behavior. The BLOCKED-override close (Phase 7) always prompts regardless of mode
 - If all Must Have stories are complete: run `/smoke-check sprint` → `/team-qa sprint` → `/gate-check`
 - If tech debt was logged: track it via `/tech-debt` to keep the register current
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

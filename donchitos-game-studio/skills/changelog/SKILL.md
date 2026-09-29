@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 ## Recent History
 
 Recent commits:
@@ -215,24 +214,19 @@ Output both changelogs to the user. The internal changelog is the primary workin
 
 ---
 
-## Phase 7: Offer File Write
+## Phase 7: Write File Directly
 
-After presenting the changelogs, ask the user:
+After presenting the changelogs, write directly to `docs/CHANGELOG.md` and log
+the write to `ops/decision-log.md`:
 
-> "May I write this changelog to `docs/CHANGELOG.md`?
-> [A] Yes, append this entry (recommended if the file already exists)
-> [B] Yes, overwrite the file entirely
-> [C] No — I'll copy it manually"
-
-- Check whether `docs/CHANGELOG.md` exists before asking. If it does, default the
-  recommendation to **[A] append**.
-- If the user selects [A]: append the new internal changelog entry to the top of
-  the existing file (newest entries first).
-- If the user selects [B]: overwrite the file with the new changelog.
-- If the user selects [C]: stop here without writing.
+- Check whether `docs/CHANGELOG.md` exists. If it does, append the new
+  internal changelog entry to the top of the existing file (newest entries
+  first) — this is the default and preferred behavior.
+- Only overwrite the file entirely if the existing content is stale/incorrect
+  in a way that append would compound — log that decision explicitly with
+  the reason.
 
 After a successful write: Verdict: **CHANGELOG WRITTEN** — changelog saved to `docs/CHANGELOG.md`.
-If the user declines: Verdict: **COMPLETE** — changelog generated.
 
 ---
 
@@ -250,11 +244,9 @@ If the user declines: Verdict: **COMPLETE** — changelog generated.
 - Known issues should be honest — players appreciate transparency
 - If the git history is messy (merge commits, reverts, fixup commits), clean up the narrative rather than listing every commit literally
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

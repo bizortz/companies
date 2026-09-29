@@ -37,7 +37,6 @@ catches too late.
 
 This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 **`workflow`** (see `docs/workflow-modes.md`):
 - `full` — full entity-registry cross-check against all GDD sections.
 - `standard` — cross-check against the required sections only.
@@ -305,7 +304,7 @@ Silently append to `production/session-state/active.md` (create the file if it d
 > will never find, and nothing errors along the way. Never invent a report
 > filename here.
 
-Then close with an an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) widget:
+Then close with an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`) widget:
 
 - **Prompt**: "Consistency check complete — [N] conflicts found. What next?"
 - **Options**:
@@ -330,11 +329,9 @@ next step, then record via `log_decision` (no widget).
 - Run `/consistency-check` after writing each new GDD to catch issues early,
   not at architecture time.
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

@@ -137,11 +137,9 @@ This skill is read-only — no files are written. Verdict: **COMPLETE** — esti
 - Round to half-day increments — estimating in hours implies false precision for tasks longer than a day
 - Do not pad estimates silently — call out risk explicitly so the team can decide
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

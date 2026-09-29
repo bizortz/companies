@@ -17,7 +17,6 @@ metadata:
 **Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
 `project.yaml` → default `collaborative`). This skill runs autonomously. Every decision it would previously have surfaced as a question is made by the owning agent and logged to `ops/decision-log.md`, per the operating rules in `docs/automation-modes.md` (the studio default mode is `autonomous`). The only exceptions are the fixed human gates listed in `ops/always-ask.yaml`, which always pause for explicit sign-off.
 
-
 # Skill Test
 
 Validates `skills/*/SKILL.md` files for structural compliance and
@@ -157,7 +156,7 @@ For a single skill:
 Check 1 — Frontmatter Fields:    PASS
 Check 2 — Multiple Phases:       PASS (7 phases found)
 Check 3 — Verdict Keywords:      PASS (PASS, FAIL, CONCERNS)
-Check 4 — Collaborative Protocol: PASS ("May I write" found)
+Check 4 — Autonomous Operating Language: PASS (no human-gate language found)
 Check 5 — Next-Step Handoff:     WARN (no follow-up section found)
 Check 6 — Fork Context Complexity: PASS (8 phases, context: fork set)
 Check 7 — Argument Hint:         PASS
@@ -237,10 +236,10 @@ Mark each assertion:
   to replace.
 
 For **Protocol Compliance** assertions (always present):
-- Check whether the skill requires "May I write" before file writes
-- Check whether the skill presents findings before requesting approval
+- Check whether the skill writes directly and logs the write to `ops/decision-log.md`, rather than gating on human approval
+- Check whether the skill presents findings clearly before or alongside the write (a reviewer reading `ops/decision-log.md` later should understand the rationale)
 - Check whether the skill ends with a recommended next step
-- Check whether the skill avoids auto-creating files without approval
+- Check whether the skill avoids silently skipping a write it should have made (autonomous mode writes directly; it does not use lack of approval as an excuse to skip the artifact)
 
 ### Step 4 — Build Report
 
@@ -262,19 +261,19 @@ Case 2: [Edge Case — name]
   Case Verdict: PASS
 
 Protocol Compliance:
-  [PASS] Uses "May I write" before file writes
-  [PASS] Presents findings before asking approval
+  [PASS] Writes directly and logs to `ops/decision-log.md`
+  [PASS] Presents findings alongside the logged decision
   [WARN] No explicit next-step handoff at end
 
 Overall Verdict: FAIL (1 case failed, 1 warning)
 ```
 
-### Step 5 — Offer to Write Results
+### Step 5 — Write Results
 
-"May I write these results to `CCGS Skill Testing Framework/results/skill-test-spec-[name]-[date].md`
-and update `CCGS Skill Testing Framework/catalog.yaml`?"
-
-If yes:
+Write the results file directly to
+`CCGS Skill Testing Framework/results/skill-test-spec-[name]-[date].md`,
+update `CCGS Skill Testing Framework/catalog.yaml`, and log the run to
+`ops/decision-log.md`:
 - Write results file to `CCGS Skill Testing Framework/results/`
 - Update the skill's entry in `CCGS Skill Testing Framework/catalog.yaml`:
   - `last_spec: [date]`
@@ -422,11 +421,9 @@ After any mode completes, offer contextual follow-up:
 - After `audit`: "Start with the critical-priority gaps. Use the spec template
   at `CCGS Skill Testing Framework/templates/skill-test-spec.md` to create new specs."
 
-
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

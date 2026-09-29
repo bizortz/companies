@@ -36,15 +36,15 @@ This skill is the entry point for new users. It does NOT assume you have a game 
 
 ---
 
-**Automation mode**: Resolve `modes.automation` (`project.local.yaml` →
-`project.yaml` → default `collaborative`). **Note**: on a fresh project no
-`modes.automation` is set yet, so `/start` runs collaboratively — it is
-creating the config. Its core onboarding questions (starting point, rigor,
-automation) are project-shaping and always prompt regardless
-of mode. Engine choice is **not** among them — it is deferred to
-`/setup-engine`, which Phase 4 hands off to.
-If `/start` is re-run on an already-configured project, the resolved mode
-applies per `docs/automation-modes.md`.
+**Automation mode**: This skill sets `modes.automation: autonomous` on a fresh
+project (see Phase 3e) — the studio does not run a `collaborative` onboarding
+flow. Its core onboarding decisions (starting point, rigor) are
+project-shaping and are made autonomously using the best available signal
+from the conversation/brief, logged to `ops/decision-log.md`. Engine choice is
+**not** among them — it is deferred to `/setup-engine`, which Phase 4 hands
+off to.
+If `/start` is re-run on an already-configured project, `modes.automation`
+should already read `autonomous` per Phase 3e.
 
 ## Phase 1: Detect Project State
 
@@ -257,40 +257,22 @@ back where it was.
 
 ---
 
-## Phase 3e: Set Automation Mode
+## Phase 3e: Confirm Automation Mode
 
-Check whether `modes.automation` is already set in `project.yaml`. **If it is**,
-show it — "Automation is set to `[current]`." — and proceed to Phase 4. Do not
-ask again.
+Check whether `modes.automation` is already set in `project.yaml`. If it is
+anything other than `autonomous`, correct it: this studio runs `autonomous` by
+default and exclusively in normal operation (see `docs/automation-modes.md`).
+Write `modes.automation: autonomous` to `project.yaml` directly (no separate
+confirmation needed — this is a fixed studio policy, not a per-project choice)
+and log the correction to `ops/decision-log.md` if it changed an existing value.
 
-**If it is not set**: Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-
-- **Prompt**: "Last one: how much should I confirm with you as we work?"
-- **Options**:
-  - `Collaborative` — I ask before each significant step and show drafts before writing. Most control; best while you are learning the workflow and want to see everything.
-  - `Guided (recommended)` — I decide the small stuff and proceed, but still stop for the big calls (scope changes, file deletions, schema changes). Far fewer interruptions than collaborative, without giving up control of the decisions that matter.
-  - `Autonomous` — I proceed and log decisions rather than asking, except for the always-ask categories. Fastest to run, but it makes every call itself and costs more tokens; best for trusted, well-scoped runs.
-
-Value mapping: `Collaborative` → `collaborative`, `Guided (recommended)` →
-`guided`, `Autonomous` → `autonomous`.
-
-Write `modes.automation` to `project.yaml` immediately after the user selects —
-no separate "May I write?" needed, as the write is a direct consequence of the
-selection. Use the Edit tool to add it under the `modes:` block. There is **no
-legacy mirror file** for this setting.
-
-Then say: "Set `modes.automation` to `[choice]`. See
-`docs/automation-modes.md` for exactly what each mode asks vs. proceeds
-on. `guided` and `autonomous` still always stop for the `automation_always_ask`
-categories (scope changes, file deletions, schema changes)."
-
-**Why this is asked here.** `modes.automation` controls how often every skill
-stops to confirm. A project that wants to move fast should not have to discover
-the knob after fifty approval prompts — that is the frustration this setting
-answers. Asked once, at onboarding, like the others. Do **not** seed
-`modes.automation` into the Phase 3c template: Phase 3e skips when the key is
-already set, so seeding it would suppress its own question (the collision Y.3
-and Y.6 guard for the other knobs).
+Then say: "`modes.automation` is `autonomous`. See `docs/automation-modes.md`
+for what that means in practice — every decision is made and logged by the
+owning agent, and the only interruptions are the fixed
+`automation_always_ask` categories in `ops/always-ask.yaml` (real-money
+spend above the weekly limit, first public release or price changes, legal
+terms, personal data handling outside policy, and deleting production
+data)."
 
 ---
 
@@ -350,7 +332,7 @@ Then use an autonomous decision (logged to `ops/decision-log.md` per `docs/autom
 
 ## Phase 5: Hand Off
 
-When the user confirms their next step, respond with a single short line: "Type `[skill command]` to begin." Nothing else. Do not re-explain the skill or add encouragement. The `/start` skill's job is done.
+Once the owning agent's decision is logged, respond with a single short line: "Type `[skill command]` to begin." Nothing else. Do not re-explain the skill or add encouragement. The `/start` skill's job is done.
 
 Verdict: **COMPLETE** — user oriented and handed off to next step.
 
@@ -365,23 +347,17 @@ Verdict: **COMPLETE** — user oriented and handed off to next step.
 
 ---
 
-## Collaborative Protocol
+## Onboarding Protocol
 
-**Applies in `collaborative` mode (the default).** For `guided` and
-`autonomous` modes, see `docs/automation-modes.md` — the rules below
-describe what collaborative mode requires, not universal behavior.
-
-1. **Ask first** — never assume the user's state or intent
-2. **Present options** — give clear paths, not mandates
-3. **User decides** — they pick the direction
-4. **No auto-execution** — recommend the next skill, don't run it without asking
-5. **Adapt** — if the user's situation doesn't fit a template, listen and adjust
-
+1. **Gather signal first** — read the concept/brief provided rather than assuming
+2. **Present the path chosen** — explain the recommended next step and why
+3. **Decide directly** — pick the best-fit path from the signal available, logging the pick and alternatives considered to `ops/decision-log.md` if the studio has no concept/brief to go on yet
+4. **Hand off directly** — proceed to the recommended next skill rather than waiting to be told to run it
+5. **Adapt** — if the situation doesn't fit a template, adjust the path and log why
 
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 

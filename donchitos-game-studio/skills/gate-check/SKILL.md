@@ -56,9 +56,10 @@ GDDs — a system pinned to a higher tier must meet that tier's section count
 before the gate passes, regardless of the project-level workflow (see Section 2b,
 "Per-system overrides").
 
-> **gate-check honors `workflow` but is exempt from `automation`.** The artifact
-> checklist changes per tier; the collaborative prompting protocol (Section 8)
-> always applies — a phase gate is a deliberate human checkpoint, never auto-run.
+> **gate-check honors `workflow`.** The artifact checklist changes per tier;
+> the director-panel assessment (Section 8) always runs, and the gating
+> director/producer decides and logs the verdict autonomously — a phase gate
+> is a deliberate decision checkpoint, but not a human one.
 
 **`qa.level`**: controls test enforcement at phase gates, where `workflow`
 controls which artifacts are required. `modes.rigor` sets both together; set
@@ -80,15 +81,11 @@ get `individual`).
 
 - **With argument**: `/gate-check production` — validate readiness for that specific phase
 - **No argument**: Auto-detect current stage using the same heuristics as
-  `/project-stage-detect`, then **confirm with the user before running**:
-
-  Use an autonomous decision (logged to `ops/decision-log.md` per `docs/automation-modes.md`):
-  - Prompt: "Detected stage: **[current stage]**. Running gate for [Current] → [Next] transition. Is this correct?"
-  - Options:
-    - `[A] Yes — run this gate`
-    - `[B] No — pick a different gate` (if selected, show a second widget listing all gate options: Concept → Systems Design, Systems Design → Technical Setup, Technical Setup → Pre-Production, Pre-Production → Production, Production → Polish, Polish → Release)
-  
-  Do not skip this confirmation step when no argument is provided.
+  `/project-stage-detect`, then run the gate for that detected [Current] →
+  [Next] transition directly. Log the detected stage and the gate chosen to
+  `ops/decision-log.md`. If the detection is ambiguous between two plausible
+  stages, run the earlier (more conservative) one and note the ambiguity in
+  the report rather than guessing high.
 
 ---
 
@@ -262,8 +259,8 @@ that and does not decide it.
 
 **`NO_CHECK` is not `PRESENT`.** The header prints a `NO_CHECK:` count before any
 row precisely so this cannot be skimmed past. Those steps were *scanned*, not
-*satisfied* — carry each into Section 4 (Collaborative Assessment) and ask, or
-mark MANUAL CHECK NEEDED. A gate that reports PASS because most of its checklist
+*satisfied* — carry each into Section 4 (Autonomous Assessment) and check
+for corroborating evidence, or mark MANUAL CHECK NEEDED. A gate that reports PASS because most of its checklist
 was undetectable is the failure mode this count exists to prevent.
 
 **Existence is not adequacy.** The script cannot tell a real document from a
@@ -363,13 +360,16 @@ and must be resolved before advancing.
 
 ---
 
-## 4. Collaborative Assessment
+## 4. Autonomous Assessment
 
-For items that can't be automatically verified, **ask the user**:
+For items that can't be automatically verified, check for corroborating
+evidence directly and decide, logging the reasoning to `ops/decision-log.md`:
 
-- "I can't automatically verify that the core loop plays well. Has it been playtested?"
-- "No playtest report found. Has informal testing been done?"
-- "Performance profiling data isn't available. Would you like to run `/perf-profile`?"
+- No playtest report found? Check for informal testing notes, bug reports
+  referencing play sessions, or recent commits touching the core loop. If
+  none exist, do not assume PASS.
+- Performance profiling data isn't available? Recommend running `/perf-profile`
+  and mark the item MANUAL CHECK NEEDED rather than guessing.
 
 **Never assume PASS for unverifiable items.** Mark them as MANUAL CHECK NEEDED.
 
@@ -444,7 +444,7 @@ Art Director:       [READY / CONCERNS / NOT READY]
 ```
 
 **Apply to the verdict:**
-- Any director returns NOT READY → verdict is minimum FAIL (user may override with explicit acknowledgement)
+- Any director returns NOT READY → verdict is minimum FAIL (producer may override with a logged, explicit rationale in `ops/decision-log.md`)
 - Any director returns CONCERNS → verdict is minimum CONCERNS
 - All four READY → eligible for PASS (still subject to artifact and quality checks from Section 3)
 
@@ -585,7 +585,7 @@ For a **FAIL** draft:
 - "Is the fail condition resolvable, or does it indicate a deeper design problem?"
 
 **Step 2 — Answer each question** independently.
-Do NOT reference the draft verdict text — re-check specific files or ask the user.
+Do NOT reference the draft verdict text — re-check specific files or Decide autonomously (log to `ops/decision-log.md`):.
 
 **Step 3 — Revise if needed:**
 - If any answer reveals a missed blocker → upgrade verdict (PASS→CONCERNS or CONCERNS→FAIL)
@@ -606,8 +606,10 @@ Do NOT reference the draft verdict text — re-check specific files or ask the u
 
 ## 6. Update Stage on PASS
 
-When the verdict is **PASS** and the user confirms they want to advance, write the
-new stage to BOTH `project.yaml` and the legacy `production/stage.txt`.
+When the verdict is **PASS**, the owning agent (producer, or the director whose
+phase is gating) advances the stage immediately — log the decision to
+`ops/decision-log.md` — and write the new stage to BOTH `project.yaml` and the
+legacy `production/stage.txt`.
 
 ### 6.1 Primary write — `project.yaml`
 
@@ -766,26 +768,25 @@ Based on the verdict, suggest specific next steps:
 
 ## Collaborative Protocol
 
-This skill follows the collaborative design principle:
+This skill follows the autonomous gate-check principle:
 
 1. **Scan first**: Check all artifacts and quality gates
-2. **Ask about unknowns**: Don't assume PASS for things you can't verify
+2. **Investigate unknowns**: Don't assume PASS for things you can't verify — check
 3. **Present findings**: Show the full checklist with status
-4. **User decides**: The verdict is a recommendation — the user makes the final call
-5. **Get approval**: "May I write this gate check report to production/gate-checks/?"
+4. **Owning agent decides**: The verdict is advisory to the pipeline; the owning agent (producer or gating director) makes the final call and logs it to `ops/decision-log.md`
+5. **Write directly** and log the write to `ops/decision-log.md`.
 6. **Never auto-fix**: If required artifacts are missing, report the FAIL verdict and
    name the skill to run (e.g. "run `/test-setup`"). Do NOT create missing files or
    re-run the gate automatically. Creating files to manufacture a PASS defeats the
    gate's purpose.
 
-**Never** block a user from advancing — the verdict is advisory. Document the risks
-and let the user decide whether to proceed despite concerns.
-
+**Never** silently block progress — the verdict is advisory. Document the risks
+clearly in `ops/decision-log.md` and let the owning agent (producer, or the
+gating director) decide whether to proceed despite concerns.
 
 ## Procedure
 
 Follow the numbered/staged steps described above in order. Each step runs autonomously: resolve configuration and current project state first, perform the check or artifact generation described, and record any decision above specialist level in `ops/decision-log.md`. If a step would normally have asked the user a question, instead apply the autonomous decision rule in `docs/automation-modes.md` and proceed, escalating only per `ops/always-ask.yaml`.
-
 
 ## Output
 
