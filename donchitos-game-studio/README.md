@@ -38,7 +38,7 @@ specialist teams from the upstream template were removed; see
 | Studio Head & CEO | — |
 | Community Manager | producer |
 | Creative Director | ceo |
-| DevOps Engineer | producer |
+| DevOps Engineer | technical-director |
 | Economy Designer | game-designer |
 | Engine Programmer | lead-programmer |
 | Lead Game Designer | creative-director |
@@ -55,7 +55,7 @@ specialist teams from the upstream template were removed; see
 | QA Lead | technical-director |
 | QA Tester | qa-lead |
 | Release Manager | producer |
-| Security Engineer | producer |
+| Security Engineer | technical-director |
 | Sound Designer | audio-director |
 | Systems Designer | game-designer |
 | Technical Artist | art-director |
